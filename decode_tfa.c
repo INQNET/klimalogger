@@ -6,7 +6,8 @@
 int main(int argc, char *argv[]) {
 	FILE *fileptr;
 	unsigned char data[32768];
-	int sensors = 3;
+	int sensors;
+	int block_size;
 
 	int i;
 	int len;
@@ -21,6 +22,18 @@ int main(int argc, char *argv[]) {
 
 	len = fread(data, 1, 32768, fileptr);
 	printf("Read %d bytes.\n", len);
+
+	sensors = data[0x0C];
+	printf("Found %d external sensors.\n", sensors);
+	sensors++;
+	printf(" ==== %d total sensors.\n", sensors);
+
+	if (sensors != 6) {
+		printf("Sorry, I don't understand the data, if there are other than \n");
+		printf(" 5 external sensors configured!\n");
+		return 2;
+	}
+	//block_size = 5 + 
 
 	for (i=0; i<=(int)(len/15);i++) {
 		unsigned char* ptr = data + (i*15) + data_offset;
