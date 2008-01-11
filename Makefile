@@ -47,7 +47,7 @@ INSTALL = install
 
 ####### Build rules
 
-all: dump_tfa decode_tfa
+all: dump_tfa decode_tfa config_tfa
 #test3600 dump3600 history3600 histlog3600 fetch3600 log3600 mysql3600
 
 test3600 : $(OBJ)
@@ -64,6 +64,9 @@ dump_tfa : dump_tfa.o $(LIBOBJ)
 
 decode_tfa : decode_tfa.o $(LIBOBJ)
 	$(CC) $(CFLAGS) -o $@ decode_tfa.o $(LIBOBJ) $(CC_LDFLAGS)
+
+config_tfa: config_tfa.o $(LIBOBJ)
+	$(CC) $(CFLAGS) -o $@ config_tfa.o $(LIBOBJ) $(CC_LDFLAGS)
 
 log3600 : $(LOGOBJ)
 	$(CC) $(CFLAGS) -o $@ $(LOGOBJ) $(CC_LDFLAGS)

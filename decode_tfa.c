@@ -1,84 +1,51 @@
-/*  open3600 - dump3600.c
- *
- *  Version 1.10
- *
- *  Control WS3600 weather station
- *
- *  Copyright 2023-2025, Kenneth Lavrsen, Grzegorz Wisniewski, Sander Eerkes
- *  This program is published under the GNU General Public license
- */
-
-#include "rw3600.h"
 
 
+#include <stdio.h>
+#include <unistd.h>
 
-/********** MAIN PROGRAM ************************************************
- *
- * This program reads from a WS3600 weather station at a given address
- * range and write the data in a text file in human readable format.
- *
- * Just run the program without parameters
- * for usage.
- *
- * It uses the config file for device name.
- * Config file locations - see open3600.conf
- *
- ***********************************************************************/
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	FILE *fileptr;
 	unsigned char data[32768];
 	int sensors = 3;
 
 	int i;
-	int start_adr, len;
-	struct config_type config;
+	int len;
 
-	// Get serial port from connfig file.
-	// Note: There is no command line config file path feature!
-	// history3600 will only search the default locations for the config file
+	int data_offset = 0x64;
 
 	fileptr = fopen("tfa.dump", "r");
 	if (fileptr == NULL) {
 		printf("Cannot open file %s\n","tfa.dump");
-		abort();
+		return 1;
 	}
 
-
-	start_adr = 0x64;
-	len = 1802*3; //(0x7ef4+259) - start_adr;
-	printf("Dumping %d bytes.\n", len);
-	if (read_safe(ws, start_adr, len, data, NULL) == -1) {
-		printf("\nError reading data\n");
-		close_weatherstation(ws);
-		fclose(fileptr);
-		exit(0);
-	}
-
-	// Write out the data
-	for (i=0; i<=len;i++) {
-		fprintf(fileptr,"%c", data[i]);
-	}
+	len = fread(data, 1, 32768, fileptr);
+	printf("Read %d bytes.\n", len);
 
 	for (i=0; i<=(int)(len/15);i++) {
+		unsigned char* ptr = data + (i*15) + data_offset;
 		printf("%02x:%02x %02x.%02x.20%02x ",
-			data[i*15+1], data[i*15+0], data[i*15+2], data[i*15+3], data[i*15+4]);
-		int f_in;
-		int t_in, t_comma_in;
-		f_in = data[i*15+5];
-		t_in = data[i*15+6];
-		t_comma_in = (data[i*15+6]&0xF0 >> 8);
-		printf(" f:%x t: %x.%x ", f_in, t_in, t_comma_in);
-		printf(" %02x %02x  %02x %02x  %02x %02x  %02x %02x  %02x %02x \n",
-			data[i*15+5],
-			data[i*15+6], data[i*15+7], data[i*15+8],
-			data[i*15+9], data[i*15+10], data[i*15+11],
-			data[i*15+12], data[i*15+13], data[i*15+14]
-			);
+			ptr[1], ptr[0], ptr[2], ptr[3], ptr[4]);
+		int f_in, f_1, f_2;
+		int t_in, t_1, t_2;
+		t_in = (ptr[5] >> 4)*10 + (ptr[5]&0x0F) + ((ptr[6] & 0x0F))*100;
+		t_in -= 300;
+		t_1 = (ptr[7] & 0x0F)*10 + (ptr[7] >> 4)*100 + (ptr[6] >> 4);
+		t_1 -= 300;
+		f_in = (ptr[8] & 0x0F) + ((ptr[8] & 0xF0) >> 4) *10;
+		f_1 = (ptr[9] & 0x0F) + ((ptr[9] & 0xF0) >> 4) *10;
+
+		t_2 = (ptr[10] & 0x0F) + ((ptr[10] >> 4) * 10) + (ptr[11] & 0x0F)*100;
+		t_2 -= 300;
+		f_2 = (ptr[11] >> 4) + (ptr[12] & 0x0F)*10;
+		printf(" Tin: %d T1: %d Fin: %d F1: %d T2: %d F2: %d  ", t_in, t_1, f_in, f_1, t_2, f_2);
+		printf("\n");
+/*		printf("  %02x  %02x %02x  %02x %02x \n",
+			ptr[10], ptr[11],
+			ptr[12], ptr[13], ptr[14]
+			); */
 	}
 
-	// Goodbye and Goodnight
-	close_weatherstation(ws);
 	return(0);
 }
 

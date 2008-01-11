@@ -11,6 +11,7 @@
 #include "rw3600.h"
 
 
+
 /********** MAIN PROGRAM ************************************************
  *
  * This program reads from a WS3600 weather station at a given address
@@ -25,54 +26,39 @@
  ***********************************************************************/
 int main(int argc, char *argv[])
 {
-	WEATHERSTATION ws;
-	FILE *fileptr;
 	unsigned char data[32768];
+	int sensors = 3;
 
-	int start_adr, len;
+	int i;
+	int len;
+
+	WEATHERSTATION ws;
 	struct config_type config;
-	int block_len = 1800;
 
 	// Get serial port from connfig file.
 	// Note: There is no command line config file path feature!
 	// history3600 will only search the default locations for the config file
 
+
 	get_configuration(&config, "");
-
-	memset(data, 0xAA, 32768);
-
-	fileptr = fopen("tfa.dump", "w");
-	if (fileptr == NULL) {
-		printf("Cannot open file %s\n","tfa.dump");
+	ws = open_weatherstation(config.serial_device_name);
+	len = 0x64;
+	if (read_safe(ws, 0x00, len, data, NULL) == -1) {
+		printf("error reading config data\n");
 		abort();
 	}
 
-	// Setup serial port
-	ws = open_weatherstation(config.serial_device_name);
-
-	start_adr = 0x00;
-	len = 0x7FFF; // 1802*3; //(0x7ef4+259) - start_adr;
-	printf("Dumping %d bytes.\n", len);
-	//if (read_safe(ws, start_adr, len, data, NULL) == -1) {
-	//	printf("\nError reading data\n");
-	//}
-
-	while (start_adr < len) {
-		int this_len = block_len;
-		if (start_adr + block_len > len)
-			this_len = len-start_adr;
-
-		printf("   ... reading %d bytes beginning from %d\n", this_len, start_adr);
-
-		write_data(ws, start_adr, 0, NULL);
-		read_data(ws, this_len, data+start_adr);
-
-		start_adr += block_len;
+	for (i=0; i<=(int)(len/8);i++) {
+		printf("@%02x   %02x %02x  %02x %02x  %02x %02x  %02x %02x \n",
+			i*8,
+			data[i*8+0], data[i*8+1],
+			data[i*8+2], data[i*8+3],
+			data[i*8+4], data[i*8+5],
+			data[i*8+6], data[i*8+7]
+			);
 	}
-	fwrite(data, len, 1, fileptr);
-
 	close_weatherstation(ws);
-	fclose(fileptr);
+
 	return(0);
 }
 
