@@ -1,0 +1,644 @@
+Address: 0000 - Data: 00
+Address: 0001 - Data: 00
+Address: 0002 - Data: F8
+Address: 0003 - Data: FF
+Address: 0004 - Data: FF
+Address: 0005 - Data: FF
+
+buzzer (off)
+Address: 0006 - Data: 8E
+
+Address: 0007 - Data: 06
+
+light (on)
+Address: 0008 - Data: 70
+
+Address: 0009 - Data: 00
+Address: 000A - Data: 53
+Address: 000B - Data: 0D
+
+storm alarm (on)
+Address: 000C - Data: 02
+
+Address: 000D - Data: 00
+Address: 000E - Data: 00
+Address: 000F - Data: 00
+Address: 0010 - Data: 00
+Address: 0011 - Data: 00
+Address: 0012 - Data: 00
+Address: 0013 - Data: 00
+Address: 0014 - Data: 00
+Address: 0015 - Data: 00
+Address: 0016 - Data: 00
+Address: 0017 - Data: 00
+Address: 0018 - Data: 00
+Address: 0019 - Data: 00
+Address: 001A - Data: 00
+Address: 001B - Data: 00
+Address: 001C - Data: 50
+Address: 001D - Data: 23
+Address: 001E - Data: 47
+Address: 001F - Data: 90
+Address: 0020 - Data: 50
+Address: 0021 - Data: 10
+Address: 0022 - Data: 00
+Address: 0023 - Data: 00
+
+forecast / tendency
+Address: 0024 - Data: 20
+
+Address: 0025 - Data: 00
+
+temperature indoor (22.9)
+Address: 0026 - Data: 29
+Address: 0027 - Data: 06
+
+note: shared addresses
+temperature indoor min (19.5)
+Address: 0028 - Data: 50
+Address: 0029 - Data: 59
+
+Address: 002A - Data: 00
+
+temperature indoor max (26.4)
+Address: 002B - Data: 64
+Address: 002C - Data:  6
+
+note: shared addresses
+temperature indoor min time (19:25)
+Address: 002C - Data: 5 
+Address: 002D - Data: 92
+Address: 002E - Data:  1
+
+temperature indoor min date (13-08-05)
+Address: 002E - Data: 3 
+Address: 002F - Data: 81
+Address: 0030 - Data: 50
+Address: 0031 - Data:  0
+
+temperature indoor max time (16:22)
+Address: 0031 - Data: 2 
+Address: 0032 - Data: 62
+Address: 0033 - Data:  1
+
+temperature indoor max date (30-08-05)
+Address: 0033 - Data: 0 
+Address: 0034 - Data: 83
+Address: 0035 - Data: 50
+Address: 0036 - Data:  0
+
+Address: 0037 - Data: 00
+Address: 0038 - Data: 40
+Address: 0039 - Data: 04
+Address: 003A - Data: 00
+Address: 003B - Data: 71
+Address: 003C - Data: 00
+
+temperature outdoor (19.9)
+Address: 003D - Data: 99
+Address: 003E - Data: 05
+
+temperature outdoor min (hw:12.2)(12.3)
+Address: 003F - Data: 30
+Address: 0040 - Data: 52
+
+Address: 0041 - Data: 00
+
+temperature outdoor max (32.1)
+Address: 0042 - Data: 21
+Address: 0043 - Data:  7
+
+note: shared addresses
+temperature outdoor min time (00:11)
+Address: 0043 - Data: 1 
+Address: 0044 - Data: 01
+Address: 0045 - Data:  0
+
+temperature outdoor min date (26-08-2005)
+Address: 0045 - Data: 6 
+Address: 0046 - Data: 82
+Address: 0047 - Data: 50
+Address: 0048 - Data: 20
+
+temperature outdoor max time (16:32)
+Address: 0048 - Data: 2 
+Address: 0049 - Data: 63
+Address: 004A - Data:  1
+
+temperature outdoor max date (31-08-05)
+Address: 004A - Data: 1 
+Address: 004B - Data: 83
+Address: 004C - Data: 50
+Address: 004D - Data: 00
+
+Address: 004E - Data: 00
+Address: 004F - Data: 40
+Address: 0050 - Data: 04
+Address: 0051 - Data: 00
+Address: 0052 - Data: 71
+Address: 0053 - Data: 00
+
+windchill (19.9)
+Address: 0054 - Data: 99
+Address: 0055 - Data: 05
+
+note: shared addresses
+windchill min temp (hw:8.5)(8.6)
+Address: 0056 - Data: 60
+Address: 0057 - Data: 48
+
+Address: 0058 - Data: 00
+
+windchill max temp (32.1)
+Address: 0059 - Data: 21
+Address: 005A - Data:  7
+
+windchill min time (04:04)
+Address: 005A - Data: 4 
+Address: 005B - Data: 40
+Address: 005C - Data:  0
+
+windchill min date (26-08-05)
+Address: 005C - Data: 6 
+Address: 005D - Data: 82
+Address: 005E - Data: 50
+Address: 005F - Data:  0
+
+windchill max time (16:32)
+Address: 005F - Data: 2 
+Address: 0060 - Data: 63
+Address: 0061 - Data:  1
+
+windchill max date (31-08-05)
+Address: 0061 - Data: 1 
+Address: 0062 - Data: 83
+Address: 0063 - Data: 50
+Address: 0064 - Data:  0
+
+Address: 0065 - Data: 00
+Address: 0066 - Data: 00
+Address: 0067 - Data: 04
+Address: 0068 - Data: 00
+Address: 0069 - Data: 60
+Address: 006A - Data: 10
+
+dewpoint (14.6)
+Address: 006B - Data: 45
+Address: 006C - Data: 05
+
+dewpoint min (7.0)
+Address: 006D - Data: 04
+Address: 006E - Data: 47
+
+note: shared addresses
+dewpoint max (18.7)
+Address: 006F - Data: 74
+Address: 0070 - Data: 87
+Address: 0071 - Data:  5
+
+dewpoint min time (20:56)
+Address: 0071 - Data: 6 
+Address: 0072 - Data: 05
+Address: 0073 - Data:  2
+
+dewpoint min date (09-08-05)
+Address: 0073 - Data: 9 
+Address: 0074 - Data: 80
+Address: 0075 - Data: 50
+Address: 0076 - Data:  0
+
+dewpoint max time (16:39)
+Address: 0076 - Data: 9 
+Address: 0077 - Data: 63
+Address: 0078 - Data:  1
+
+dewpoint max date (31-08-05)
+Address: 0078 - Data: 1 
+Address: 0079 - Data: 83
+Address: 007A - Data: 50
+Address: 007B - Data:  0
+
+Address: 007C - Data: 00
+Address: 007D - Data: 00
+Address: 007E - Data: 03
+Address: 007F - Data: 00
+Address: 0080 - Data: 50
+
+humidity indoor (54)
+Address: 0081 - Data: 54
+
+humidity indoor min (42)
+Address: 0082 - Data: 42
+
+humidity indoor max (70)
+Address: 0083 - Data: 70
+
+humidity indoor min time (20:11)
+Address: 0084 - Data: 11
+Address: 0085 - Data: 20
+
+humidity indoor min date (30-08-05)
+Address: 0086 - Data: 30
+Address: 0087 - Data: 08
+Address: 0088 - Data: 05
+
+humidity indoor max time (00:00
+Address: 0089 - Data: 00
+Address: 008A - Data: 00
+
+humidity indoor max date (01-01-2004)
+Address: 008B - Data: 01
+Address: 008C - Data: 01
+Address: 008D - Data: 04
+
+Address: 008E - Data: 35
+Address: 008F - Data: 65
+
+humidity outdoor (71)
+Address: 0090 - Data: 71
+
+humidity outdoor min (39)
+Address: 0091 - Data: 39
+
+humidity outdoor max (92)
+Address: 0092 - Data: 92
+
+humidity outdoor min time (16:02)
+Address: 0093 - Data: 02
+Address: 0094 - Data: 16
+
+humidity outdoor min date (30-08-05)
+Address: 0095 - Data: 30
+Address: 0096 - Data: 08
+Address: 0097 - Data: 05
+
+humidity outdoor max time (07:34)
+Address: 0098 - Data: 43
+Address: 0099 - Data: 07
+
+humidity outdoor max date (25-08-05)
+Address: 009A - Data: 25
+Address: 009B - Data: 08
+Address: 009C - Data: 05
+
+Address: 009D - Data: 45
+Address: 009E - Data: 70
+
+rain last month: (81.8) 
+Address: 009F - Data: 84
+Address: 00A0 - Data: 81
+Address: 00A1 - Data: 00
+
+rain last month max (81.8) 
+Address: 00A2 - Data: 84
+Address: 00A3 - Data: 81
+Address: 00A4 - Data: 00
+
+rain last month max time (00:00)
+Address: 00A5 - Data: 00
+Address: 00A6 - Data: 00
+
+rain last month max date (01-09-05)
+Address: 00A7 - Data: 01
+Address: 00A8 - Data: 09
+Address: 00A9 - Data: 05
+
+Address: 00AA - Data: 00
+Address: 00AB - Data: 00
+Address: 00AC - Data: 00
+Address: 00AD - Data: 40
+
+rain last week: (24.8)
+Address: 00AE - Data: 86
+Address: 00AF - Data: 24
+Address: 00B0 - Data: 00
+
+rain last week max (35.7)
+Address: 00B1 - Data: 74
+Address: 00B2 - Data: 35
+Address: 00B3 - Data: 00
+
+rain last week max time (00:00)
+Address: 00B4 - Data: 00
+Address: 00B5 - Data: 00
+
+rain last week max date (01-08-05)
+Address: 00B6 - Data: 01
+Address: 00B7 - Data: 08
+Address: 00B8 - Data: 05
+
+Address: 00B9 - Data: 00
+Address: 00BA - Data: 00
+Address: 00BB - Data: 00
+Address: 00BC - Data: 00
+
+rain last 24 hours (0)
+Address: 00BD - Data: 00
+Address: 00BE - Data: 00
+Address: 00BF - Data: 00
+
+rain last 24 hours max (35.7)
+Address: 00C0 - Data: 74
+Address: 00C1 - Data: 35
+Address: 00C2 - Data: 00
+
+rain last 24 hours max time (13:08)
+Address: 00C3 - Data: 08
+Address: 00C4 - Data: 13
+
+rain last 24 hours max date (31-07-05)
+Address: 00C5 - Data: 31
+Address: 00C6 - Data: 07
+Address: 00C7 - Data: 05
+
+Address: 00C8 - Data: 00
+Address: 00C9 - Data: 00
+Address: 00CA - Data: 05
+Address: 00CB - Data: 00
+
+rain last hour (0)
+Address: 00CC - Data: 00
+Address: 00CD - Data: 00
+Address: 00CE - Data: 00
+
+rain last hour max (9.3)
+Address: 00CF - Data: 32
+Address: 00D0 - Data: 09
+Address: 00D1 - Data: 00
+
+rain last hour max time (05:11)
+Address: 00D2 - Data: 11
+Address: 00D3 - Data: 05
+
+rain last hour max date (31-07-05)
+Address: 00D4 - Data: 31
+Address: 00D5 - Data: 07
+Address: 00D6 - Data: 05
+
+Address: 00D7 - Data: 00
+Address: 00D8 - Data: 10
+Address: 00D9 - Data: 00
+Address: 00DA - Data: 60
+Address: 00DB - Data: 86
+
+rain total: (117.5) 
+Address: 00DC - Data: 75
+Address: 00DD - Data: 11
+
+note: shared addresses
+rain total time (01:35)
+Address: 00DE - Data: 50
+Address: 00DF - Data: 13
+Address: 00E0 - Data:  0
+
+rain total date (31-07-05)
+Address: 00E0 - Data: 1 
+Address: 00E1 - Data: 73
+Address: 00E2 - Data: 50
+Address: 00E3 - Data:  0
+
+recording interval (60 min)
+Address: 00E3 - Data: 6 
+
+Address: 00E4 - Data: 00
+Address: 00E5 - Data: 00
+Address: 00E6 - Data: 00
+Address: 00E7 - Data: 00
+Address: 00E8 - Data: 00
+Address: 00E9 - Data: 00
+Address: 00EA - Data: 00
+Address: 00EB - Data: FC
+Address: 00EC - Data: 00
+
+wind speed min time (23:51)
+Address: 00ED - Data: 51
+Address: 00EE - Data: 23
+
+wind speed min date (04-09-05)
+Address: 00EF - Data: 04
+Address: 00F0 - Data: 09
+Address: 00F1 - Data: 05
+
+wind speed max time (22:39)
+Address: 00F2 - Data: 39
+Address: 00F3 - Data: 22
+
+wind speed max date (04-09-05)
+Address: 00F4 - Data: 04
+Address: 00F5 - Data: 09
+Address: 00F6 - Data: 05
+
+Address: 00F7 - Data: 00
+Address: 00F8 - Data: 00
+Address: 00F9 - Data: 00
+Address: 00FA - Data: FF
+Address: 00FB - Data: 27
+Address: 00FC - Data: 23
+Address: 00FD - Data: 00
+Address: 00FE - Data: 00
+
+wind speed m/s (0)
+Address: 00FF - Data: 00
+Address: 0100 - Data: 00
+
+wind speed min m/s (0)
+Address: 0101 - Data: 00
+Address: 0102 - Data: 70
+
+wind speed max m/s (7.4)
+Address: 0103 - Data: 00
+Address: 0104 - Data: 00
+
+Address: 0105 - Data: 00
+
+wind last 5 directions and current (1 byte * 22.5)
+Address: 0106 - Data: 21
+Address: 0107 - Data: 32
+Address: 0108 - Data: 11
+
+Address: 0109 - Data: 00
+Address: 010A - Data: 00
+Address: 010B - Data: 00
+Address: 010C - Data: 50
+Address: 010D - Data: 02
+Address: 010E - Data: 00
+Address: 010F - Data: A4
+Address: 0110 - Data: 04
+Address: 0111 - Data: 00
+Address: 0112 - Data: F0
+Address: 0113 - Data: 03
+Address: 0114 - Data: 00
+Address: 0115 - Data: 60
+Address: 0116 - Data: 15
+
+gust min time (13:57)
+Address: 0117 - Data: 57
+Address: 0118 - Data: 13
+
+gust min date (03-09-05)
+Address: 0119 - Data: 03
+Address: 011A - Data: 09
+Address: 011B - Data: 05
+
+gust max time (11:51)
+Address: 011C - Data: 51
+Address: 011D - Data: 11
+
+gust max date (31-07-05)
+Address: 011E - Data: 31
+Address: 011F - Data: 07
+Address: 0120 - Data: 05
+
+Address: 0121 - Data: 00
+Address: 0122 - Data: 00
+Address: 0123 - Data: 00
+Address: 0124 - Data: 00
+Address: 0125 - Data: 00
+Address: 0126 - Data: 00
+Address: 0127 - Data: 30
+Address: 0128 - Data: 03
+Address: 0129 - Data: 00
+
+gust min (2.8)???
+Address: 012A - Data: 28
+Address: 012B - Data: 00
+
+gust max (15.2)
+Address: 012C - Data: 20
+Address: 012D - Data: 15
+
+Address: 012E - Data: 00
+Address: 012F - Data: 05
+Address: 0130 - Data: FE
+Address: 0131 - Data: 01
+Address: 0132 - Data: 00
+Address: 0133 - Data: 00
+Address: 0134 - Data: 00
+Address: 0135 - Data: 00
+Address: 0136 - Data: 00
+Address: 0137 - Data: 00
+
+absolut pressure (1018.5)
+Address: 0138 - Data: 85
+Address: 0139 - Data: 01
+Address: 013A - Data: 71
+
+Address: 013B - Data: 00
+Address: 013C - Data: 03
+
+relative pressure (1020.5)
+Address: 013D - Data: 05
+Address: 013E - Data: 02
+Address: 013F - Data: 31
+
+Address: 0140 - Data: 01
+Address: 0141 - Data: 03
+Address: 0142 - Data: 20
+Address: 0143 - Data: 00
+Address: 0144 - Data: 61
+Address: 0145 - Data: 00
+Address: 0146 - Data: 10
+Address: 0147 - Data: 03
+Address: 0148 - Data: 00
+Address: 0149 - Data: 31
+Address: 014A - Data: 95
+Address: 014B - Data: 02
+
+relative pressure min (1002.3)
+Address: 014C - Data: 23
+Address: 014D - Data: 00
+Address: 014E - Data: 91
+
+Address: 014F - Data: 95
+Address: 0150 - Data: 02
+Address: 0151 - Data: 00
+Address: 0152 - Data: 03
+Address: 0153 - Data: 11
+Address: 0154 - Data: 04
+Address: 0155 - Data: 03
+
+relative pressure max (1032.0)
+Address: 0156 - Data: 20
+Address: 0157 - Data: 03
+Address: 0158 - Data: 71
+
+Address: 0159 - Data: 04
+Address: 015A - Data: 03
+
+relative pressure min time (07:01)
+Address: 015B - Data: 01
+Address: 015C - Data: 07
+
+relative pressure min date (25-08-05)
+Address: 015D - Data: 25
+Address: 015E - Data: 08
+Address: 015F - Data: 05
+
+relative pressure max time (12:01)
+Address: 0160 - Data: 01
+Address: 0161 - Data: 12
+
+relative pressure max date (03-09-05)
+Address: 0162 - Data: 03
+Address: 0163 - Data: 09
+Address: 0164 - Data: 05
+
+Address: 0165 - Data: 80
+Address: 0166 - Data: 95
+Address: 0167 - Data: 90
+Address: 0168 - Data: 82
+Address: 0169 - Data: 02
+Address: 016A - Data: 00
+Address: 016B - Data: 96
+Address: 016C - Data: 50
+Address: 016D - Data: 83
+Address: 016E - Data: 02
+Address: 016F - Data: 80
+Address: 0170 - Data: 03
+Address: 0171 - Data: 51
+Address: 0172 - Data: 06
+Address: 0173 - Data: 03
+Address: 0174 - Data: 00
+Address: 0175 - Data: 04
+Address: 0176 - Data: 11
+Address: 0177 - Data: 07
+Address: 0178 - Data: 03
+Address: 0179 - Data: FF
+Address: 017A - Data: 04
+Address: 017B - Data: 00
+Address: 017C - Data: 00
+Address: 017D - Data: 00
+Address: 017E - Data: FF
+Address: 017F - Data: FF
+Address: 0180 - Data: FF
+Address: 0181 - Data: FF
+Address: 0182 - Data: 51
+Address: 0183 - Data: 23
+Address: 0184 - Data: 47
+Address: 0185 - Data: 90
+Address: 0186 - Data: 50
+Address: 0187 - Data: 10
+Address: 0188 - Data: FF
+Address: 0189 - Data: FF
+Address: 018A - Data: FF
+Address: 018B - Data: FF
+Address: 018C - Data: FF
+Address: 018D - Data: FF
+Address: 018E - Data: FF
+Address: 018F - Data: FF
+Address: 0190 - Data: AB
+Address: 0191 - Data: AA
+Address: 0192 - Data: AA
+Address: 0193 - Data: AA
+Address: 0194 - Data: FE
+Address: 0195 - Data: D8
+Address: 0196 - Data: E2
+Address: 0197 - Data: 40
+Address: 0198 - Data: 15
+Address: 0199 - Data: 06
+Address: 019A - Data: 00
+Address: 019B - Data: 00
+Address: 019C - Data: 04
+Address: 019D - Data: 00
+Address: 019E - Data: 00
+Address: 019F - Data: 00

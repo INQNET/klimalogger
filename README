@@ -1,0 +1,299 @@
+open3600
+
+version 2.0
+
+Copyright 2003,2004 Kenneth Lavrsen
+Copyright 2005 Grzegorz Wisniewski, Sander Eerkes
+
+This program is published under the GNU General Public License version 2.0
+or later. Please read the file 'COPYING' for more info.
+
+
+With open3600 you can read and later write to and from a WS-3600 weather station.
+You do anything - maybe even harm the station or bring it into a mode it
+never comes out of again.
+It is your choice if you want to take the risk.
+The author takes no responsibility for any damage the use of this program
+may cause.
+
+
+dump3600
+Is a special tool which will dump a range of memory into a file
+AND to the screen. This makes is possible to easily see what has changed in
+an area larger than 15 bytes and even use a file comparison tool to spot the
+changes. Note that the WS-3600 operates with addresses of 4-bit nibbles.
+When you specify an odd number of addresses the program will always add one
+as it always fetches bytes from the station and displays these bytes.
+If you only want a file and no display output just run it as:
+dump3600 filename start end > /dev/null
+If you only want to display and not create a file run:
+dump3600 /dev/null start end
+
+
+bin3600 
+Does the same as dump3600 except the data is written in binary
+format to the file. It is not byte for byte. Each nibble from the station
+is saved as one byte in the file (always value from 00 to 0F).
+The advantage of this is that when you look with a binary file viewer and
+you started from address 0 the addresses fit 1:1.
+
+
+history3600
+Read out a selected range of the history records as raw data to
+both screen and file. Output is human readable.
+
+
+log3600
+It reads all the current data from the station
+and append the data to a log file with a time stamp. The file format is
+human readable text but without any labels - only with single space between
+each value and a newline for each record. This makes it easy to pick up the
+data using e.g. Perl or PHP for presentation on the web.
+
+
+fetch3600
+This software reads all current values from the  
+station incl min/max data and dates and output them in a simple format to
+standard out. The idea is that you can call this program from a Perl or PHP
+page and load the data in an array ready for display.
+To load the data into php place this example code in the page.
+
+<?php
+exec("/usr/local/bin/fetch3600",$fetcharray);
+foreach ($fetcharray as $value)
+{
+	list($parameter,$parvalue)=explode(" ", $value);
+	$ws["$parameter"]=$parvalue;
+}
+?>
+
+You can let the rest be pure HTML and just put in for example
+<?=$ws["To"]?> to show outdoor temperature.
+
+
+wu3600  1.0. This is a development of fetch3600 which only fetches
+the data used by Weather Underground (http://www.wunderground.com) and it
+uploads your data to your personal weather station page at Weather Underground.
+For this to work you need to register your station at Weather Underground.
+You will then receive an ID and a password. This ID and password must be added
+to the config file (open3600.conf) before the program is used.
+
+
+cw3600
+This again is a version of fetch3600 which fetched
+current data from the weather station and sends it to the Citizen Weather
+Observation Program via the APRSWXNET (Automatic Positioning Reporting System
+Weather Network) but using one of the Internet APRS servers.
+I received the original version from Randy Miller (radio ham N6ABM).
+It was fully working and a great piece of work.
+I had to completely rewrite it to fit my new library rw3600 and to make
+it compatible with Windows.
+Here are some URLs if you want to know more
+http://www.wxqa.com/
+http://pond1.gladstonefamily.net:8080/aprswxnet.html
+http://www.findu.com/
+ftp://ftp.tapr.org/aprssig/aprsspec/spec/aprs101/APRS101.pdf
+
+
+xml3600
+It is another example of work derived from fetch3600.
+Again it collects data from the weather station and stores the data in an XML file.
+It is very easy to modify the source to any XML coding you like.
+
+
+mysql3600
+It works like log3600 but instead of writing to a flat file it stores the
+weather data in a MySQL database.
+The program requires that MySQL client library and header files are installed.
+At the release of I had not yet built a version on Windows. But with the
+right MySQL things installed and some tweaks in the Makefile it should
+compile also on Windows.
+
+pgsql3600
+It works like log3600 but instead of writing to a flat file it stores the
+weather data in a PostgresSQL database.
+The program requires that PostgresSQL client library and header files are installed.
+This is only available for Linux for the moment.
+
+light3600.c  
+It is a small tool that can turn the LCD backlight on and off
+
+
+histlog3600.c  
+It does a similar job to log3600.c but instead of reading the current data
+it read the history data stored in the weather station. Windchill and dewpoint
+are calculated values based on the other measurements.
+It checks the log file for the last record written and read all the new
+records and add them to the log file.
+
+
+interval3600.c  
+This is a small tool set can set and read the interval at which the weather
+station saves the history datasets.
+
+
+minmax3600.c  
+It is a new tool using the new rw3600 reset functions to reset min/max for
+all measurements and resetting rain counters.
+
+
+rw3600.c / rw3600.h
+This is the common function library. This has been extended in so that
+now you can read actual weather data using these functions without having
+to think about decoding the data from the weather station.
+
+linux3600.c / linux3600.h
+This is part of the common function library and contains all the platform
+unique functions. These files contains the functions that are special for
+Linux. It contains re-written code from the 1.1 version of rw3600.
+
+win3600.c / win3600.h
+This is part of the common function library and contains all the platform
+unique functions. These files contains the functions that are special for
+Windows. The most important new part is the code that handles the serial port.
+As long as a windows C compiler defines a variable called WIN32 the compiler
+will choose to the win3600.c and .h files when compiling.
+We have used the MingW32 compiler on Windows. This is a free open source
+compiler that uses the gcc compiler and makefiles.
+The Windows programs have been tested on Windows XP.
+
+memory_map_3600.txt is a very useful information file that tells all the
+currently known positions of data inside the weather station.
+The information in this file may not be accurate. It is gathered by Sander & Grzegorz
+http://open3600.fast-mail.nl/tiki-view_forum.php?forumId=8
+by hours of experiments. None of the information has come from the
+manufacturer of the station. If you find something new please send email
+to the author (email address below).
+Using the memory map and the rw3600 library is it pretty easy to create
+your own Linux driven interface for your weather station.
+
+
+Installing:
+
+Read the file INSTALL.
+
+
+
+How to use the programs:
+All the programs now uses a config file to get information like
+COM port (serial device name), preferred units of dimentions,
+etc etc.
+See the INSTALL file and the open3600.conf-dist file for more info.
+Note that you should copy the open3600.conf-dist to your preferred location
+and that it should be renamed to open3600.conf.
+
+open3600
+Read bytes:    open3600 address_hex r number_of_bytes
+Write nibbles: open3600 address_hex w text_hex_string
+Set bits:      open3600 address_hex s bit_number
+Unset bits:    open3600 address_hex c bit_number
+
+dump3600
+Write address to file:	dump3600 filename start_address end_address
+The addresses are simply written in hex. E.g. 21C 3A1
+
+bin3600
+Write address to file:	bin3600 filename start_address end_address
+The addresses are simply written in hex. E.g. 21C 3A1
+
+history3600
+Write records to file:	history3600 filename start_record end_record
+The addresses are simply written in hex. E.g. 1B 3A
+
+log3600
+Write current data to log interpreted: log3600 filename config_filename
+This is very suitable for a cron job since it makes no output to screen.
+If no config_filename is given the program will search for it using the
+default search sequence - see the open3600.conf-dist file.
+
+fetch3600
+Write current data to standard out: fetch3600 config_filename
+It takes one parameter which is the config file name with path.
+If this parameter is omitted the program will look at the default paths.
+
+wu3600
+Send current data to Weather Underground: wu3600 config_filename
+It takes one parameter which is the config file name with path.
+If this parameter is omitted the program will look at the default paths.
+
+Remember to add your Weather Underground ID and password to the config file.
+To get an account at Weather Underground - go here
+http://www.wunderground.com/weatherstation/index.asp
+
+cw3600
+Send current data to CWOP: cw3600 config_filename
+It takes one parameter which is the config file name with path.
+If this parameter is omitted the program will look at the default paths.
+
+To join the Citizen Weather Observer Program (CWOP) - go here
+http://www.wxqa.com/
+At the release of version  the 4 APRS servers given should be valid.
+If they later change simply update the config file.
+Without a config file two default servers are hard coded in the program.
+
+xml3600
+Write current data to XML file: xml3600 xml-filename config_filename
+It takes two parameters. xml_file_path and config_filename.
+If the config_filename parameter is omitted the program will look
+at the default paths.
+
+mysql3600
+Write current data to MySQL database: mysql3600 config_filename
+It takes one parameter which is the config file name with path.
+If this parameter is omitted the program will look at the default paths.
+
+
+pgsql3600
+Write current data to PostgresSQL database: pgsql3600 config_filename
+It takes one parameter which is the config file name with path.
+If this parameter is omitted the program will look at the default paths.
+
+
+light3600
+Turn light off:    light3600 off config_filename
+Turn light on:     light3600 on config_filename
+If the config_filename parameter is omitted the program will look
+at the default paths.
+
+histlog3600
+Write history data to log file interpreted.
+histlog3600 log_filename config_filename
+If the config_filename parameter is omitted the program will look
+at the default paths.
+
+interval3600
+Read or set the time interval at which the weatherstation saves the
+history data.
+Set Interval: light3600 interval_minutes next_dataset_minutes config_filename.
+Read current Interval: light3600 0 0 config_filename\n".
+If interval is set to 0 the current setting is displayed but nothing changed.
+If the config_filename parameter is omitted the program will look
+at the default paths.
+
+minmax3600
+Reset minimum/maximum values in a WS-3600 weather station.
+Reset Daily Maximum (Temp, Humid, WC, DP): minmax3600 dailymax config_filename
+Reset Daily Minimum (Temp, Humid, WC, DP): minmax3600 dailymin config_filename
+Reset Temperature Indoor Max|Min|Both: minmax3600 timax|timin|tiboth config_filename
+Reset Temperature Outdoor Max|Min|Both: minmax3600 tomax|tomin|toboth config_filename
+Reset Dewpoint Max|Min|Both: minmax3600 dpmax|dpmin|dpboth config_filename
+Reset Windchill Max|Min|Both: minmax3600 wcmax|wcmin|wcboth config_filename
+Reset Wind Max|Min|Both: minmax3600 wmax|wmin|wboth config_filename
+Reset Humidity Indoor Max|Min|Both: minmax3600 himax|himin|hiboth config_filename
+Reset Humidity Outdoor Max|Min|Both: minmax3600 homax|homin|hoboth config_filename
+Reset Pressure Max|Min|Both: minmax3600 pmax|pmin|pboth config_filename
+Reset Rain Maximum 1h|24h: minmax3600 r1max|r24max config_filename
+Reset Rain Counter 1h|24h|Total: minmax3600 r1|r24|rtotal config_filename
+If the config_filename parameter is omitted the program will look
+at the default paths.
+
+
+weatherstation.php
+It contains a simple PHP webpage that will fetch the current weather data
+directly from your station and show it on a nice webpage.
+It will run on any webserver running PHP. Just copy the files to any
+directory in the web tree. The png and jpg files are small graphics
+used on the webpage to show forecast and tendency.
+
+Sander & Gregorz
+open3600@fast-mail.nl
