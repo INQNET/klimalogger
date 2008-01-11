@@ -24,7 +24,6 @@ FETCHOBJ = fetch3600.o rw3600.o linux3600.o win3600.o
 WUOBJ = wu3600.o rw3600.o linux3600.o win3600.o
 CWOBJ = cw3600.o rw3600.o linux3600.o win3600.o
 DUMPOBJ = dump3600.o rw3600.o linux3600.o win3600.o
-TFAOBJ = read_tfa.o rw3600.o linux3600.o win3600.o
 HISTOBJ = history3600.o rw3600.o linux3600.o win3600.o
 HISTLOGOBJ = histlog3600.o rw3600.o linux3600.o win3600.o
 DUMPBINOBJ = bin3600.o rw3600.o linux3600.o win3600.o
@@ -34,6 +33,7 @@ LIGHTOBJ = light3600.o rw3600.o linux3600.o win3600.o
 INTERVALOBJ = interval3600.o rw3600.o linux3600.o win3600.o
 MINMAXOBJ = minmax3600.o rw3600.o linux3600.o win3600.o
 TESTOBJ = test3600.o rw3600.o linux3600.o win3600.o
+LIBOBJ = rw3600.o linux3600.o win3600.o
 
 VERSION = 0.20
 
@@ -47,7 +47,8 @@ INSTALL = install
 
 ####### Build rules
 
-all: test3600 read_tfa dump3600 history3600 histlog3600 fetch3600 log3600 mysql3600
+all: dump_tfa decode_tfa
+#test3600 dump3600 history3600 histlog3600 fetch3600 log3600 mysql3600
 
 test3600 : $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(CC_LDFLAGS)
@@ -58,8 +59,11 @@ open3600 : $(OBJ)
 dump3600 : $(DUMPOBJ)
 	$(CC) $(CFLAGS) -o $@ $(DUMPOBJ) $(CC_LDFLAGS)
 
-read_tfa : $(TFAOBJ)
-	$(CC) $(CFLAGS) -o $@ $(TFAOBJ) $(CC_LDFLAGS)
+dump_tfa : dump_tfa.o $(LIBOBJ)
+	$(CC) $(CFLAGS) -o $@ dump_tfa.o $(LIBOBJ) $(CC_LDFLAGS)
+
+decode_tfa : decode_tfa.o $(LIBOBJ)
+	$(CC) $(CFLAGS) -o $@ decode_tfa.o $(LIBOBJ) $(CC_LDFLAGS)
 
 log3600 : $(LOGOBJ)
 	$(CC) $(CFLAGS) -o $@ $(LOGOBJ) $(CC_LDFLAGS)

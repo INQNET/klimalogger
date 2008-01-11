@@ -11,31 +11,6 @@
 #include "rw3600.h"
 
 
-/********************************************************************
- * print_usage prints a short user guide
- *
- * Input:   none
- *
- * Output:  prints to stdout
- *
- * Returns: exits program
- *
- ********************************************************************/
-void print_usage(void)
-{
-	printf("\n");
-	printf("dump3600 - Dump all data from WS-3600 to file.\n");
-	printf("Data is stored with address in human readable format\n");
-	printf("(C)2023 Kenneth Lavrsen.\n");
-	printf("(C)2025 Grzegorz Wisniewski,Sander Eerkes. (Version alfa)\n");
-	printf("This program is released under the GNU General Public License (GPL)\n\n");
-	printf("Usage:\n");
-	printf("dump3600 filename start_address end_address\n");
-	printf("Addresses in hex, range 0-7FFF\n");
-	exit(0);
-}
-
-
 /********** MAIN PROGRAM ************************************************
  *
  * This program reads from a WS3600 weather station at a given address
@@ -95,24 +70,6 @@ int main(int argc, char *argv[])
 	for (i=0; i<=len;i++) {
 		fprintf(fileptr,"%c", data[i]);
 	}
-
-	for (i=0; i<=(int)(len/15);i++) {
-		printf("%02x:%02x %02x.%02x.20%02x ",
-			data[i*15+1], data[i*15+0], data[i*15+2], data[i*15+3], data[i*15+4]);
-		int f_in;
-		int t_in, t_comma_in;
-		f_in = data[i*15+5];
-		t_in = data[i*15+6];
-		t_comma_in = (data[i*15+6]&0xF0 >> 8);
-		printf(" f:%x t: %x.%x ", f_in, t_in, t_comma_in);
-		printf(" %02x %02x  %02x %02x  %02x %02x  %02x %02x  %02x %02x \n",
-			data[i*15+5],
-			data[i*15+6], data[i*15+7], data[i*15+8],
-			data[i*15+9], data[i*15+10], data[i*15+11],
-			data[i*15+12], data[i*15+13], data[i*15+14]
-			);
-	}
-
 	// Goodbye and Goodnight
 	close_weatherstation(ws);
 	return(0);
