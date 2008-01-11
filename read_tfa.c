@@ -4,7 +4,7 @@
  *
  *  Control WS3600 weather station
  *
- *  Copyright 2003-2005, Kenneth Lavrsen, Grzegorz Wisniewski, Sander Eerkes
+ *  Copyright 2023-2025, Kenneth Lavrsen, Grzegorz Wisniewski, Sander Eerkes
  *  This program is published under the GNU General Public license
  */
 
@@ -26,8 +26,8 @@ void print_usage(void)
 	printf("\n");
 	printf("dump3600 - Dump all data from WS-3600 to file.\n");
 	printf("Data is stored with address in human readable format\n");
-	printf("(C)2003 Kenneth Lavrsen.\n");
-	printf("(C)2005 Grzegorz Wisniewski,Sander Eerkes. (Version alfa)\n");
+	printf("(C)2023 Kenneth Lavrsen.\n");
+	printf("(C)2025 Grzegorz Wisniewski,Sander Eerkes. (Version alfa)\n");
 	printf("This program is released under the GNU General Public License (GPL)\n\n");
 	printf("Usage:\n");
 	printf("dump3600 filename start_address end_address\n");
@@ -53,9 +53,10 @@ int main(int argc, char *argv[])
 	WEATHERSTATION ws;
 	FILE *fileptr;
 	unsigned char data[32768];
+	unsigned char sensors;
 
 	int i;
-	int start_adr, end_adr;
+	int start_adr, len;
 	struct config_type config;
 
 	// Get serial port from connfig file.
@@ -64,31 +65,26 @@ int main(int argc, char *argv[])
 
 	get_configuration(&config, "");
 
-	if (argc != 4) {
-		print_usage();
-		exit(0);
+
+	fileptr = fopen("tfa.dump", "w");
+	if (fileptr == NULL) {
+		printf("Cannot open file %s\n","tfa.dump");
+		abort();
 	}
 
 	// Setup serial port
 	ws = open_weatherstation(config.serial_device_name);
 
-
-	fileptr = fopen(argv[1], "w");
-	if (fileptr == NULL) {
-		printf("Cannot open file %s\n",argv[1]);
-		exit(0);
-	}
-
-	start_adr = strtol(argv[2],NULL,16);
-	end_adr = strtol(argv[3],NULL,16);
-
-	if (start_adr < 0 || start_adr > 0x7FFF || end_adr < 0 ||
-			end_adr > 0x7FFF || start_adr>=end_adr) {
-		printf("Address range invalid\n");
+	if (read_safe(ws, 0x0c, 1, &sensors, NULL) == -1) {
+		printf("error while communicating with tfastation\n");
 		abort();
 	}
+	printf("Sensors: %d\n", sensors);
 
-	if (read_safe(ws, start_adr, end_adr-start_adr + 1, data, NULL) == -1) {
+	start_adr = 0x64;
+	len = 1802*3; //(0x7ef4+259) - start_adr;
+	printf("Dumping %d bytes.\n", len);
+	if (read_safe(ws, start_adr, len, data, NULL) == -1) {
 		printf("\nError reading data\n");
 		close_weatherstation(ws);
 		fclose(fileptr);
@@ -96,10 +92,25 @@ int main(int argc, char *argv[])
 	}
 
 	// Write out the data
-	for (i=0; i<=end_adr-start_adr;i++) {
-		printf("Address: %04X - Data: %02X\n",start_adr+i,data[i]);
-	//	fprintf(fileptr,"Address: %04X - Data: %02X\n",start_adr+i,data[i]);
+	for (i=0; i<=len;i++) {
 		fprintf(fileptr,"%c", data[i]);
+	}
+
+	for (i=0; i<=(int)(len/15);i++) {
+		printf("%02x:%02x %02x.%02x.20%02x ",
+			data[i*15+1], data[i*15+0], data[i*15+2], data[i*15+3], data[i*15+4]);
+		int f_in;
+		int t_in, t_comma_in;
+		f_in = data[i*15+5];
+		t_in = data[i*15+6];
+		t_comma_in = (data[i*15+6]&0xF0 >> 8);
+		printf(" f:%x t: %x.%x ", f_in, t_in, t_comma_in);
+		printf(" %02x %02x  %02x %02x  %02x %02x  %02x %02x  %02x %02x \n",
+			data[i*15+5],
+			data[i*15+6], data[i*15+7], data[i*15+8],
+			data[i*15+9], data[i*15+10], data[i*15+11],
+			data[i*15+12], data[i*15+13], data[i*15+14]
+			);
 	}
 
 	// Goodbye and Goodnight
