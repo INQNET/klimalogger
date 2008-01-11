@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 		
 	
 	if (read_safe(ws, start_adr, end_adr-start_adr + 1, data, NULL) == -1) {
-    printf("\nError reading data\n");
+    printf("\nError reading data (read_safe failed)\n");
     close_weatherstation(ws);
 	  fclose(fileptr);
 	  exit(0);

@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 	get_configuration(&config, argv[1]);
 
-	
+
 
   i = 0;
   do {
@@ -53,15 +53,15 @@ int main(int argc, char *argv[])
     close_weatherstation(ws);
     i++;
   } while (i < 4 && read_result == -1);
-  
+
   if (read_result == -1)
 	{
     printf("\nError reading data\n");
 	  exit(0);
   }
-  
+
 	/* READ TEMPERATURE INDOOR */
-	
+
 	sprintf(logline, "%sTi %.1f\n", logline,
 	        temperature_indoor(data));
 

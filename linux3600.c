@@ -14,6 +14,8 @@
 #define DEBUG 0
 
 #include "rw3600.h"
+#include "mcdelay.h"
+#include "mcdelay.c"
 
 /********************************************************************
  * open_weatherstation, Windows version
@@ -33,11 +35,13 @@ WEATHERSTATION open_weatherstation (char *device)
   print_log(1,"open_weatherstation");
   
   //calibrate nanodelay function
+  microdelay_init(1);
+  /*
   spins_per_ns = (float) calibrate() * (float) CLOCKS_PER_SEC * 1.0e-9f;
   sprintf(str,"spins_per_ns=%.2f",spins_per_ns);
   print_log(2,str);
   sprintf(str,"CLOCKS_PER_SEC=%.2f",((float) CLOCKS_PER_SEC));
-  print_log(2,str);
+  print_log(2,str);*/
   
 	//Setup serial port
   if ((ws = open(device, O_RDWR | O_NOCTTY)) < 0)
@@ -508,85 +512,6 @@ int citizen_weather_send(struct config_type *config, char *aprsline)
 }
 
 /********************************************************************
- * delay_loop  
- * delay function used in nanodelay
- *
- * Inputs:  count - number of loop iterations
- * 
- * 
- * Returns: nothing
- *
- ********************************************************************/
- 
-void delay_loop(unsigned long count)
-{
-  do {} while (--count);
-}
-
-/********************************************************************
- * wait_for_tick
- * waits for clock tick
- *
- * Inputs:  
- * 
- * 
- * Returns: clock_t structure with current time
- *
- ********************************************************************/
-//TODO: tick unit is probably not good enough (it can be different on variuos machines
-//it should be replaced with other unit - 1s , 100ms...
-clock_t wait_for_tick()
-{
-     clock_t last, current;
-
-     last = clock();
-     do {
-          current = clock();
-     } while (current == last);
-     return current;
-}
-
-/********************************************************************
- * calibrate
- * calibrate() tries to figure out how many times to spin in the delay loop to delay
- * for one clock tick. So you'll have to scale that down using CLOCKS_PER_SEC
- * and the delay you actually want. 
- * 
- * Inputs:  
- * 
- * 
- * Returns: number of loop iteration factor
- *
- ********************************************************************/
-
-long calibrate()
-{
-     clock_t current;
-     unsigned long spins, adjust;
-
-     spins = 1;
-     do {
-          current = wait_for_tick();
-          spins += spins;
-          delay_loop(spins);
-     } while (current == clock());
-
-     adjust = spins >> 1;
-     spins -= adjust;
-     do {
-          current = wait_for_tick();
-          delay_loop(spins);
-          if (current == clock()) {
-               spins += adjust;
-               adjust >>= 1;
-          } else {
-               spins -= (adjust) - 1;
-          }
-     } while (adjust > 0);
-     return spins;
-}
-
-/********************************************************************
  * nanodelay
  * delays given time in ns
  * 
@@ -599,7 +524,8 @@ long calibrate()
 
 void nanodelay(long ns)
 {
-     delay_loop((unsigned long) ((float) ns * spins_per_ns));
+	microdelay(25);
 }
+
 
 #endif
