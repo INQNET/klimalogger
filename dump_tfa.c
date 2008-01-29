@@ -1,3 +1,5 @@
+/* vim:set expandtab! ts=4: */
+
 /*  open3600 - dump3600.c
  *
  *  Version 1.10
@@ -33,7 +35,7 @@ int main(int argc, char *argv[])
 	struct config_type config;
 	int block_len = 1800;
 
-	// Get serial port from connfig file.
+	// Get serial port from config file.
 	// Note: There is no command line config file path feature!
 	// history3600 will only search the default locations for the config file
 

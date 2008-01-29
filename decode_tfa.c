@@ -1,4 +1,4 @@
-
+/* vim:set expandtab! ts=4: */
 
 #include <stdio.h>
 #include <unistd.h>
@@ -42,6 +42,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	for (i=0; i<=(int)(len/block_size);i++) {
+		int date_d, date_m, date_y;
+		int time_h, time_m;
+		int f_in, f_1, f_2, f_3;
+		float t_in, t_1, t_2, t_3;
+
 		unsigned char* ptr = data + (i*block_size) + data_offset;
 
 		if (i >= 999 && ptr[0] == 0xff) {
@@ -50,10 +55,17 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 
-		printf("%04d %02x:%02x %02x.%02x.20%02x ", i,
-			ptr[1], ptr[0], ptr[2], ptr[3], ptr[4]);
-		int f_in, f_1, f_2, f_3;
-		float t_in, t_1, t_2, t_3;
+		// hh:mm positions are reversed in eeprom
+		time_m = (((ptr[0] & 0xF0) >> 4) * 10) + (ptr[0] & 0x0F);
+		time_h = (((ptr[1] & 0xF0) >> 4) * 10) + (ptr[1] & 0x0F);
+
+		date_d = (((ptr[2] & 0xF0) >> 4) * 10) + (ptr[2] & 0x0F);
+		date_m = (((ptr[3] & 0xF0) >> 4) * 10) + (ptr[3] & 0x0F);
+		date_y = (((ptr[4] & 0xF0) >> 4) * 10) + (ptr[4] & 0x0F);
+
+		printf("%04d %02d:%02d %02d.%02d.20%02d ",
+			i, time_h, time_m, date_d, date_m, date_y);
+
 		t_in = (ptr[5] >> 4)*10 + (ptr[5]&0x0F) + ((ptr[6] & 0x0F))*100;
 		t_in -= 300; t_in /= 10;
 		t_1 = (ptr[7] & 0x0F)*10 + (ptr[7] >> 4)*100 + (ptr[6] >> 4);
@@ -65,9 +77,12 @@ int main(int argc, char *argv[]) {
 		t_2 -= 300; t_2 /= 10;
 		f_2 = (ptr[11] >> 4) + (ptr[12] & 0x0F)*10;
 
-	//	t_3 = 
+		t_3 = (ptr[12] >> 4) + (ptr[13] >> 4)*100 + (ptr[13] & 0x0F)*10;
+		t_3 -= 300; t_3 /= 10;
+		f_3 = (ptr[14] & 0x0F) + ((ptr[14] & 0xF0) >> 4) *10;
 
-		printf(" Tin: %02.1f T1: %02.1f Fin: %d F1: %d T2: %02.1f F2: %d  ", t_in, t_1, f_in, f_1, t_2, f_2);
+		printf(" Tin: %02.1f T1: %02.1f Fin: %d F1: %d T2: %02.1f F2: %d", t_in, t_1, f_in, f_1, t_2, f_2);
+		printf(" T3: %02.1f F3: %d ", t_3, f_3);
 		printf("\n");
 /*		printf("  %02x  %02x %02x  %02x %02x \n",
 			ptr[10], ptr[11],
