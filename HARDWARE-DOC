@@ -1,0 +1,11 @@
+
+EEPROM: Atmel 24C256(B?)
+
+
+Memory Map:
+
+Byte 8-9: Count Entries
+
+Byte 0x0C: Count of external sensors to be logged
+
+
