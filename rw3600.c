@@ -466,21 +466,21 @@ int read_byte(WEATHERSTATION serdevice)
  *
  ********************************************************************/
 int write_byte(WEATHERSTATION ws,int byte)
-{ 
+{
   int status;
   int i;
   char str[20];
-  
+
   sprintf(str,"Read byte %i",byte);
   print_log(3,str);
-  
+
   for (i = 0; i < 8; i++)
   {
     write_bit(ws, byte & 0x80);
     byte <<= 1;
     byte &= 0xff;
   }
-  
+
   set_RTS(ws,0);
   nanodelay(DELAY_CONST);
   status = get_CTS(ws);
