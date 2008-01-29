@@ -36,69 +36,6 @@ void write_error_exit(void)
 }
 
 
-/********************************************************************
- * command_check0123 calculates the checksum for the first 4
- * commands sent to WS2300.
- *
- * Input:   pointer to char to check
- *          sequence of command - i.e. 0, 1, 2 or 3.
- * 
- * Returns: calculated checksum as unsigned char
- *
- ********************************************************************/
-unsigned char command_check0123(unsigned char *command, int sequence)
-{
-	int response;
-
-	response = sequence * 16 + ((*command) - 0x82) / 4;
-
-	return (unsigned char) response;
-}
-
-
-/********************************************************************
- * command_check4 calculates the checksum for the last command
- * which is sent just before data is received from WS2300
- *
- * Input: number of bytes requested
- * 
- * Returns: expected response from requesting number of bytes
- *
- ********************************************************************/
-unsigned char command_check4(int number)
-{
-	int response;
-
-	response = 0x30 + number;
-
-	return response;
-}
-
-
-/********************************************************************
- * data_checksum calculates the checksum for the data bytes received
- * from the WS2300
- *
- * Input:   pointer to array of data to check
- *          number of bytes in array
- * 
- * Returns: calculated checksum as unsigned char
- *
- ********************************************************************/
-unsigned char data_checksum(unsigned char *data, int number)
-{
-	int checksum = 0;
-	int i;
-
-	for (i = 0; i < number; i++)
-	{
-		checksum += data[i];
-	}
-
-	checksum &= 0xFF;
-
-	return (unsigned char) checksum;
-}
 
 
 /********************************************************************
