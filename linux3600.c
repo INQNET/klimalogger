@@ -342,7 +342,7 @@ void sleep_long(int seconds)
 	sleep(seconds);
 }
 
-void nanodelay(long ns) {
+void nanodelay() {
 	microdelay(25);
 }
 

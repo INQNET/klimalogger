@@ -35,50 +35,6 @@ void write_error_exit(void)
 	exit(0);
 }
 
-
-
-
-/********************************************************************
- * initialize resets WS2300 to cold start (rewind and start over)
- *
- * Input:   device number of the already open serial port
- *
- * Returns: 0 if fail, 1 if success
- *
- ********************************************************************/
-int initialize(WEATHERSTATION ws2300)
-{
-	unsigned char command = 0x06;
-	unsigned char answer;
-
-	write_device(ws2300, &command, 1);
-
-	if (read_device(ws2300, &answer, 1) != 1)
-		return 0;
-
-	write_device(ws2300, &command, 1);
-	write_device(ws2300, &command, 1);
-
-	if (read_device(ws2300, &answer, 1) != 1)
-		return 0;
-
-	write_device(ws2300, &command, 1);
-
-	if (read_device(ws2300, &answer, 1) != 1)
-		return 0;
-
-	write_device(ws2300, &command, 1);
-
-	if (read_device(ws2300, &answer, 1) != 1)
-		return 0;
-
-	if (answer != 2)
-		return 0;
-
-	return 1;
-}
-
-
 /********************************************************************
  * read_data reads data from the WS2300 based on a given address,
  * number of data read, and a an already open serial port
@@ -155,15 +111,15 @@ int write_data(WEATHERSTATION ws, int address, int number,
   }
   
   set_DTR(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_RTS(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_RTS(ws,1);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_DTR(ws,1);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_RTS(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   
 //return -1 for errors
 	return i;
@@ -293,24 +249,24 @@ void read_next_byte_seq(WEATHERSTATION ws)
   print_log(3,"read_next_byte_seq");
   write_bit(ws,0);
   set_RTS(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
 }
 
 void read_last_byte_seq(WEATHERSTATION ws)
 {
   print_log(3,"read_last_byte_seq");
   set_RTS(ws,1);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_DTR(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_RTS(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_RTS(ws,1);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_DTR(ws,1);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_RTS(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
 }
 
 /********************************************************************
@@ -329,11 +285,11 @@ int read_bit(WEATHERSTATION ws)
   char str[20];
   
   set_DTR(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   status = get_CTS(ws);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_DTR(ws,1);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   sprintf(str,"Read bit %i",!status);
   print_log(4,str);
   
@@ -355,9 +311,9 @@ void write_bit(WEATHERSTATION ws,int bit)
   char str[20];
   
   set_RTS(ws,!bit);
-	nanodelay(DELAY_CONST);
+	nanodelay();
 	set_DTR(ws,0);
-	nanodelay(DELAY_CONST);
+	nanodelay();
 	set_DTR(ws,1);
 	
   sprintf(str,"Write bit %i",bit);
@@ -408,7 +364,7 @@ int write_byte(WEATHERSTATION ws,int byte)
   int i;
   char str[20];
 
-  sprintf(str,"Read byte %i",byte);
+  sprintf(str,"Writing byte %i",byte);
   print_log(3,str);
 
   for (i = 0; i < 8; i++)
@@ -419,14 +375,14 @@ int write_byte(WEATHERSTATION ws,int byte)
   }
 
   set_RTS(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   status = get_CTS(ws);
   //TODO: checking value of status, error routine
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_DTR(ws,0);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   set_DTR(ws,1);
-  nanodelay(DELAY_CONST);
+  nanodelay();
   if (status)
     return 1;
   else

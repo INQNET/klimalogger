@@ -89,6 +89,6 @@ void set_RTS(WEATHERSTATION ws, int val);
 int get_DSR(WEATHERSTATION ws);
 int get_CTS(WEATHERSTATION ws);
 long calibrate();
-void nanodelay(long ns);
+void nanodelay();
 #endif /* _INCLUDE_RW3600_H_ */
 
