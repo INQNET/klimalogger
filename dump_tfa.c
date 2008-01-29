@@ -11,7 +11,7 @@
  */
 
 #include "rw3600.h"
-
+#include <time.h>
 
 /********** MAIN PROGRAM ************************************************
  *
@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 	int start_adr, len;
 	struct config_type config;
 	int block_len = 1800;
+	char filename[50];
 
 	// Get serial port from config file.
 	// Note: There is no command line config file path feature!
@@ -43,9 +44,24 @@ int main(int argc, char *argv[])
 
 	memset(data, 0xAA, 32768);
 
-	fileptr = fopen("tfa.dump", "w");
+	// generate filename based on current time
+	{
+		time_t t;
+		struct tm *tm;
+		t = time(NULL);
+		tm = localtime(&t);
+		if (tm == NULL) {
+			perror("localtime");
+			exit(EXIT_FAILURE);
+		}
+		sprintf(filename, "tfa.dump.");
+		strftime(filename+strlen(filename), sizeof(filename)-strlen(filename), "%Y%m%d.%H%M", tm);
+	}
+
+
+	fileptr = fopen(filename, "w");
 	if (fileptr == NULL) {
-		printf("Cannot open file %s\n","tfa.dump");
+		printf("Cannot open file %s\n", filename);
 		abort();
 	}
 
