@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 	unsigned char data[32768];
 
 	int start_adr, len;
-	int block_len = 1800;
+	int block_len = 1000;
 	int retries = 0;
 	char filename[50];
 
@@ -79,6 +79,8 @@ int main(int argc, char *argv[]) {
 		if (got_len == -1 && retries < MAX_RETRIES) {
 			retries++;
 			fprintf(stderr, "W: eeprom ack failed, retrying read (retries left: %d).\n", MAX_RETRIES-retries);
+			close_weatherstation(ws);
+			ws = open_weatherstation("/dev/ttyS0");
 			continue;
 		}
 		if (got_len != this_len) {
