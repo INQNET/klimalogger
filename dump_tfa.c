@@ -55,11 +55,9 @@ int main(int argc, char *argv[]) {
 	start_adr = 0x00;
 	len = 0x7FFF; // 1802*3; //(0x7ef4+259) - start_adr;
 	printf("Dumping %d bytes.\n", len);
-	//if (read_safe(ws, start_adr, len, data, NULL) == -1) {
-	//	printf("\nError reading data\n");
-	//}
 
 	while (start_adr < len) {
+		int got_len;
 		int this_len = block_len;
 		if (start_adr + block_len > len)
 			this_len = len-start_adr;
@@ -67,7 +65,12 @@ int main(int argc, char *argv[]) {
 		printf("   ... reading %d bytes beginning from %d\n", this_len, start_adr);
 
 		write_data(ws, start_adr, 0, NULL);
-		read_data(ws, this_len, data+start_adr);
+		got_len = read_data(ws, this_len, data+start_adr);
+		printf("   >>> got     %d bytes\n", got_len);
+		if (got_len != this_len) {
+			printf("E: got less than requested bytes, dump is probably unusabled.\n");
+			break;
+		}
 
 		start_adr += block_len;
 	}
