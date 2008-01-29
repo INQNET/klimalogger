@@ -342,8 +342,9 @@ void sleep_long(int seconds)
 	sleep(seconds);
 }
 
+/* Note: if you see timing issues, maybe you need to adjust this ... */
 void nanodelay() {
-	microdelay(25);
+	microdelay(10);
 }
 
 #endif
