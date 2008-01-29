@@ -86,8 +86,8 @@ int main(int argc, char *argv[]) {
 		date_m = (((ptr[3] & 0xF0) >> 4) * 10) + (ptr[3] & 0x0F);
 		date_y = (((ptr[4] & 0xF0) >> 4) * 10) + (ptr[4] & 0x0F);
 
-		printf("%04d %02d:%02d %02d.%02d.20%02d ",
-			i, time_h, time_m, date_d, date_m, date_y);
+		printf("%04d %02d.%02d.20%02d %02d:%02d ",
+			i, date_d, date_m, date_y, time_h, time_m);
 
 		t_in = (ptr[5] >> 4)*10 + (ptr[5]&0x0F) + ((ptr[6] & 0x0F))*100;
 		t_in -= 300; t_in /= 10;
