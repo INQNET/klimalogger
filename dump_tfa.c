@@ -12,6 +12,7 @@
 
 #include "rw3600.h"
 #include <time.h>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
 	WEATHERSTATION ws;
@@ -21,6 +22,11 @@ int main(int argc, char *argv[]) {
 	int start_adr, len;
 	int block_len = 1800;
 	char filename[50];
+
+	if (geteuid() != 0) {
+		fprintf(stderr, "E: this program needs root privileges to do direct port I/O.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	// Get serial port from config file.
 	// Note: There is no command line config file path feature!
@@ -68,7 +74,7 @@ int main(int argc, char *argv[]) {
 		got_len = read_data(ws, this_len, data+start_adr);
 		printf("   >>> got     %d bytes\n", got_len);
 		if (got_len != this_len) {
-			printf("E: got less than requested bytes, dump is probably unusabled.\n");
+			fprintf(stderr, "E: got less than requested bytes, dump is probably unusabled.\n");
 			break;
 		}
 

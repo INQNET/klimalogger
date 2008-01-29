@@ -42,10 +42,6 @@ void microdelay_init(unsigned int multiply_factor) {
     /* permission to write to port 0x80
        nothing is suposed to use this port
        however, we will write the same value we've read... */
-    if (geteuid() != 0) {
-	fprintf(stderr,"ERROR: this programs needs root permisions to access parallel port. Please use root user to run or setuid bit.\n");
-	abort();
-    }
     ioperm(0x80,1,1);
     old_port_value=inb(0x80);
     m_f = multiply_factor;
