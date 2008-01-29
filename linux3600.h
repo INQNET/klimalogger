@@ -15,11 +15,9 @@
 #include <sys/file.h>
 
 #define BUFFER_SIZE 16384
-#define DELAY_CONST 1
-#define INIT_WAIT 500 
+#define INIT_WAIT 500
 
 #define BAUDRATE B300
-#define DEFAULT_SERIAL_DEVICE "/dev/ttyS0"
 
 typedef int WEATHERSTATION;
 
