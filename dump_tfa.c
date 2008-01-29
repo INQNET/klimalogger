@@ -13,28 +13,33 @@
 #include "rw3600.h"
 #include <time.h>
 #include <unistd.h>
+
 #define MAX_RETRIES 10
+#define BUFSIZE 32768
 
 int main(int argc, char *argv[]) {
 	WEATHERSTATION ws;
 	FILE *fileptr;
-	unsigned char data[32768];
+	unsigned char data[BUFSIZE];
 
 	int start_adr, len;
 	int block_len = 1000;
 	int retries = 0;
 	char filename[50];
+	char* serial_device;
 
 	if (geteuid() != 0) {
 		fprintf(stderr, "E: this program needs root privileges to do direct port I/O.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	// Get serial port from config file.
-	// Note: There is no command line config file path feature!
-	// history3600 will only search the default locations for the config file
+	if (argc != 2) {
+		fprintf(stderr, "E: no serial device specified.\n");
+		fprintf(stderr, "Usage: dump_tfa /dev/ttyS0\n");
+		exit(EXIT_FAILURE);
+	}
+	serial_device = argv[1];
 
-	memset(data, 0xAA, 32768);
 
 	// generate filename based on current time
 	{
@@ -50,19 +55,21 @@ int main(int argc, char *argv[]) {
 		strftime(filename+strlen(filename), sizeof(filename)-strlen(filename), "%Y%m%d.%H%M", tm);
 	}
 
+	// Setup serial port
+	ws = open_weatherstation(serial_device);
 
+	// Setup file
 	fileptr = fopen(filename, "w");
 	if (fileptr == NULL) {
 		printf("Cannot open file %s\n", filename);
-		abort();
+		exit(EXIT_FAILURE);
 	}
 
-	// Setup serial port
-	ws = open_weatherstation("/dev/ttyS0");
-
-	start_adr = 0x00;
+	// Start.
+	start_adr = 0;
 	len = 0x7FFF; // 1802*3; //(0x7ef4+259) - start_adr;
-	printf("Dumping %d bytes.\n", len);
+	printf("Dumping %d bytes to %s.\n", len, filename);
+	memset(data, 0xAA, BUFSIZE);
 
 	while (start_adr < len) {
 		int got_len;
@@ -91,6 +98,7 @@ int main(int argc, char *argv[]) {
 		start_adr += block_len;
 		retries = 0;
 	}
+
 	fwrite(data, len, 1, fileptr);
 
 	close_weatherstation(ws);
