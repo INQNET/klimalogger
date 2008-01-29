@@ -4,6 +4,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+void printTemp(const char* name, float value) {
+	if (value == 0xFF) return;
+	printf("T%s: %02.1f ", name, value);
+}
+void printHumidity(const char* name, float value) {
+	if (value == 0xFF) return;
+	printf("H%s: %02.1f ", name, value);
+}
+
 int main(int argc, char *argv[]) {
 	FILE *fileptr;
 	unsigned char data[32768];
@@ -53,7 +62,7 @@ int main(int argc, char *argv[]) {
 	for (i=0; i<=(int)(len/block_size);i++) {
 		int date_d, date_m, date_y;
 		int time_h, time_m;
-		int f_in, f_1, f_2, f_3;
+		int h_in, h_1, h_2, h_3;
 		float t_in, t_1, t_2, t_3;
 
 		unsigned char* ptr = data + (i*block_size) + data_offset;
@@ -62,6 +71,11 @@ int main(int argc, char *argv[]) {
 			// end of ring buffer:
 			// klimalogger only stores 999 entries, and bytes are marked with 0xff(?)
 			break;
+		}
+
+		if ((ptr[0] & 0xF0) >> 4 == 0xF) {
+			printf(">>> Wraparound.\n");
+			continue;
 		}
 
 		// hh:mm positions are reversed in eeprom
@@ -77,21 +91,37 @@ int main(int argc, char *argv[]) {
 
 		t_in = (ptr[5] >> 4)*10 + (ptr[5]&0x0F) + ((ptr[6] & 0x0F))*100;
 		t_in -= 300; t_in /= 10;
+		if (ptr[5] == 0xaa) { t_in = 0xFF; }
 		t_1 = (ptr[7] & 0x0F)*10 + (ptr[7] >> 4)*100 + (ptr[6] >> 4);
 		t_1 -= 300; t_1 /= 10;
-		f_in = (ptr[8] & 0x0F) + ((ptr[8] & 0xF0) >> 4) *10;
-		f_1 = (ptr[9] & 0x0F) + ((ptr[9] & 0xF0) >> 4) *10;
+		if (ptr[7] == 0xaa) { t_1 = 0xFF; }
+		h_in = (ptr[8] & 0x0F) + ((ptr[8] & 0xF0) >> 4) *10;
+		if (ptr[8] == 0xaa) { h_in = 0xFF; }
+		h_1 = (ptr[9] & 0x0F) + ((ptr[9] & 0xF0) >> 4) *10;
+		if (ptr[9] == 0xaa) { h_1 = 0xFF; }
 
 		t_2 = (ptr[10] & 0x0F) + ((ptr[10] >> 4) * 10) + (ptr[11] & 0x0F)*100;
 		t_2 -= 300; t_2 /= 10;
-		f_2 = (ptr[11] >> 4) + (ptr[12] & 0x0F)*10;
+		h_2 = (ptr[11] >> 4) + (ptr[12] & 0x0F)*10;
+		if (ptr[11] == 0xaa) { t_2 = h_2 = 0xFF; }
 
 		t_3 = (ptr[12] >> 4) + (ptr[13] >> 4)*100 + (ptr[13] & 0x0F)*10;
 		t_3 -= 300; t_3 /= 10;
-		f_3 = (ptr[14] & 0x0F) + ((ptr[14] & 0xF0) >> 4) *10;
+		if (ptr[13] == 0xaa) t_3 = 0xFF;
+		h_3 = (ptr[14] & 0x0F) + ((ptr[14] & 0xF0) >> 4) *10;
+		if (ptr[13] == 0xaa) h_3 = 0xFF;
 
-		printf(" Tin: %02.1f T1: %02.1f Fin: %d F1: %d T2: %02.1f F2: %d", t_in, t_1, f_in, f_1, t_2, f_2);
-		printf(" T3: %02.1f F3: %d ", t_3, f_3);
+		printTemp("in", t_in);
+		printHumidity("in", h_in);
+		printTemp("1", t_1);
+		printHumidity("1", h_1);
+		printTemp("2", t_2);
+		printHumidity("2", h_2);
+		printTemp("3", t_3);
+		printHumidity("3", h_3);
+
+//		printf(" Tin: %02.1f T1: %02.1f Fin: %d F1: %d T2: %02.1f F2: %d", t_in, t_1, h_in, h_1, t_2, h_2);
+//		printf(" T3: %02.1f F3: %d ", t_3, h_3);
 		printf("\n");
 /*		printf("  %02x  %02x %02x  %02x %02x \n",
 			ptr[10], ptr[11],
