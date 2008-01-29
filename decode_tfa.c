@@ -1,6 +1,7 @@
 /* vim:set expandtab! ts=4: */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 int main(int argc, char *argv[]) {
@@ -14,9 +15,17 @@ int main(int argc, char *argv[]) {
 
 	int data_offset = 0x64;
 
-	fileptr = fopen("tfa.dump", "r");
+	char* filename;
+
+	if (argc != 2) {
+	  printf("Usage: decode_tfa tfa.dump.filename\n");
+	  exit(EXIT_FAILURE);
+	}
+	filename = argv[1];
+
+	fileptr = fopen(filename, "r");
 	if (fileptr == NULL) {
-		printf("Cannot open file %s\n","tfa.dump");
+		printf("Cannot open file %s\n", filename);
 		return 1;
 	}
 

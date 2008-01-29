@@ -32,15 +32,12 @@ int main(int argc, char *argv[])
 	unsigned char data[32768];
 
 	int start_adr, len;
-	struct config_type config;
 	int block_len = 1800;
 	char filename[50];
 
 	// Get serial port from config file.
 	// Note: There is no command line config file path feature!
 	// history3600 will only search the default locations for the config file
-
-	get_configuration(&config, "");
 
 	memset(data, 0xAA, 32768);
 
@@ -66,7 +63,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Setup serial port
-	ws = open_weatherstation(config.serial_device_name);
+	ws = open_weatherstation("/dev/ttyS0");
 
 	start_adr = 0x00;
 	len = 0x7FFF; // 1802*3; //(0x7ef4+259) - start_adr;

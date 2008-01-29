@@ -1,0 +1,4 @@
+^tfa.dump
+\.o$
+^dump_tfa$
+^decode_tfa$

@@ -25,31 +25,23 @@
  * Returns: Handle to the weatherstation (type WEATHERSTATION)
  *
  ********************************************************************/
-WEATHERSTATION open_weatherstation (char *device)
-{
+WEATHERSTATION open_weatherstation (char *device) {
 	WEATHERSTATION ws;
 	struct termios adtio;
 	unsigned char buffer[BUFFER_SIZE];
 	long i;
-	char str[100];
   print_log(1,"open_weatherstation");
-  
+
   //calibrate nanodelay function
   microdelay_init(1);
-  /*
-  spins_per_ns = (float) calibrate() * (float) CLOCKS_PER_SEC * 1.0e-9f;
-  sprintf(str,"spins_per_ns=%.2f",spins_per_ns);
-  print_log(2,str);
-  sprintf(str,"CLOCKS_PER_SEC=%.2f",((float) CLOCKS_PER_SEC));
-  print_log(2,str);*/
-  
+
 	//Setup serial port
   if ((ws = open(device, O_RDWR | O_NOCTTY)) < 0)
 	{
 		printf("\nUnable to open serial device %s\n", device);
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if ( flock(ws, LOCK_EX) < 0 ) {
 		perror("\nSerial device is locked by other program\n");
 		exit(EXIT_FAILURE);
@@ -350,182 +342,8 @@ void sleep_long(int seconds)
 	sleep(seconds);
 }
 
-/********************************************************************
- * http_request_url - Linux version
- * 
- * Inputs: urlline - URL to Weather Underground with path and data
- *                   as a pointer to char array (string)
- *
- * Returns: 0 on success and -1 if fail.
- *
- * Action: Send a http request to Weather Underground
- *
- ********************************************************************/
-int http_request_url(char *urlline)
-{
-	int sockfd;
-	struct hostent *hostinfo;
-	struct sockaddr_in urladdress;
-	char buffer[1024];
-	int bytes_read;
-	
-	if ( (hostinfo = gethostbyname(WEATHER_UNDERGROUND_BASEURL)) == NULL )
-	{
-		perror("Host not known by DNS server or DNS server not working");
-		return(-1);
-	}
-	
-	if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
-	{
-		perror("Cannot open socket");
-		return(-1);
-	}
-
-	memset(&urladdress, 0, sizeof(urladdress));
-	urladdress.sin_family = AF_INET;
-	urladdress.sin_port = htons(80); /*default HTTP Server port */
-
-	urladdress.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
-
-	if (connect(sockfd,(struct sockaddr*)&urladdress,sizeof(urladdress)) != 0)
-	{
-		perror("Cannot connect to host");
-		return(-1);
-	}
-	sprintf(buffer, "GET %s\nHTTP/1.0\n\n", urlline);
-	send(sockfd, buffer, strlen(buffer), 0);
-
-	/* While there's data, read and print it */
-	do
-	{
-		memset(buffer, 0, sizeof(buffer));
-		bytes_read = recv(sockfd, buffer, sizeof(buffer), 0);
-		if ( bytes_read > 0 )
-			if (DEBUG) printf("%s", buffer);
-	}
-	while ( bytes_read > 0 );
-
-	/* Close socket and clean up winsock */
-	close(sockfd);
-	
-	return(0);
-}
-
-/********************************************************************
- * citizen_weather_send - Linux version
- * 
- * Inputs: config structure (pointer to) - containing CW ID
- *         datastring (pointer to) - containing all the data
- *
- * Returns: 0 on success and -1 if fail.
- *
- * Action: Send data to Citizen Weather
- *
- ********************************************************************/
-int citizen_weather_send(struct config_type *config, char *aprsline)
-{
-	int sockfd = -1; // just to eliminate a warning we'll set this
-	int bytes_read;
-	struct hostent *hostinfo;
-	struct sockaddr_in urladdress;
-	char buffer[1024];          //Enough to hold a response
-	int hostnum;
-	
-	// Connect to server and send the record
-	// loop trying all of the defined servers
-	for (hostnum = 0; hostnum <= config->num_hosts; hostnum++)
-	{
-		if ( hostnum == config->num_hosts )
-			return(-1);          // tried 'em all, fail exit
-
-		if ( (hostinfo = gethostbyname(config->aprs_host[hostnum].name) ) == NULL )
-		{
-			sprintf(buffer,"Host, %s, not known ", config->aprs_host[hostnum].name);
-			perror(buffer);
-			continue;
-		}
-			
-		if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
-		{
-			sprintf(buffer,"Cannot open socket on %s ", config->aprs_host[hostnum].name);
-			perror(buffer);
-			continue;
-		}
-	
-		memset(&urladdress, 0, sizeof(urladdress)); // clear the structure
-		urladdress.sin_family = AF_INET;
-		urladdress.sin_port = htons(config->aprs_host[hostnum].port);
-		urladdress.sin_addr = *(struct in_addr *)*hostinfo->h_addr_list;
-
-		if ( connect(sockfd, (struct sockaddr*)&urladdress, sizeof(urladdress)) != 0 )
-		{
-			sprintf(buffer,"Cannot connect to host: %s ", config->aprs_host[hostnum].name);
-			perror(buffer);
-			continue;
-		}
-		else
-		{
-			break;   // success
-		}
-	}
-
-	if (DEBUG) printf("%d: %s: ",hostnum, config->aprs_host[hostnum].name);
-
-	memset(buffer, 0, sizeof(buffer));
-	
-	if ( (recv(sockfd, buffer, sizeof(buffer), 0) > 0) && (DEBUG != 0) )                 // read login prompt
-	{
-		printf("%s", buffer);	// display prompt - if debug
-	}
-
-	// The login/header line
-	sprintf(buffer,"user %s pass -1 vers open2300\n",
-	        config->citizen_weather_id);
-	send(sockfd, buffer, strlen(buffer), 0);
-	if (DEBUG)
-		printf("%s\n", buffer);
-
-	// now the data
-	sprintf(buffer,"%s\n", aprsline);
-	send(sockfd, buffer, strlen(buffer), 0);
-	if (DEBUG)
-		printf("%s\n", buffer);
-
-	/* While there's data, read and print it - Not sure it is needed */
-	do
-	{
-		memset(buffer, 0, sizeof(buffer));
-		bytes_read = recv(sockfd, buffer, sizeof(buffer), 0);
-		if ( bytes_read > 0 )
-		{
-			if (DEBUG)
-				printf("Data returned from server\n%s\n", buffer);
-			break;
-		}
-	}
-	while ( bytes_read > 0 );
-
-	/* Close socket*/
-	close(sockfd);
-
-	return(0);
-}
-
-/********************************************************************
- * nanodelay
- * delays given time in ns
- * 
- * Inputs:  ns - time to delay in ns
- * 
- * 
- * Returns: nothing
- *
- ********************************************************************/
-
-void nanodelay(long ns)
-{
+void nanodelay(long ns) {
 	microdelay(25);
 }
-
 
 #endif
