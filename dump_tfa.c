@@ -13,6 +13,7 @@
 #include "rw3600.h"
 #include <time.h>
 #include <unistd.h>
+#define MAX_RETRIES 10
 
 int main(int argc, char *argv[]) {
 	WEATHERSTATION ws;
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
 
 	int start_adr, len;
 	int block_len = 1800;
+	int retries = 0;
 	char filename[50];
 
 	if (geteuid() != 0) {
@@ -70,15 +72,22 @@ int main(int argc, char *argv[]) {
 
 		printf("   ... reading %d bytes beginning from %d\n", this_len, start_adr);
 
+		nanodelay();
 		write_data(ws, start_adr, 0, NULL);
 		got_len = read_data(ws, this_len, data+start_adr);
 		printf("   >>> got     %d bytes\n", got_len);
+		if (got_len == -1 && retries < MAX_RETRIES) {
+			retries++;
+			fprintf(stderr, "W: eeprom ack failed, retrying read (retries left: %d).\n", MAX_RETRIES-retries);
+			continue;
+		}
 		if (got_len != this_len) {
-			fprintf(stderr, "E: got less than requested bytes, dump is probably unusabled.\n");
+			fprintf(stderr, "E: got less than requested bytes, dump is probably unusable.\n");
 			break;
 		}
 
 		start_adr += block_len;
+		retries = 0;
 	}
 	fwrite(data, len, 1, fileptr);
 
