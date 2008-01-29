@@ -13,20 +13,7 @@
 #include "rw3600.h"
 #include <time.h>
 
-/********** MAIN PROGRAM ************************************************
- *
- * This program reads from a WS3600 weather station at a given address
- * range and write the data in a text file in human readable format.
- *
- * Just run the program without parameters
- * for usage.
- *
- * It uses the config file for device name.
- * Config file locations - see open3600.conf
- *
- ***********************************************************************/
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	WEATHERSTATION ws;
 	FILE *fileptr;
 	unsigned char data[32768];
