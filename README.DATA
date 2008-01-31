@@ -1,0 +1,42 @@
+tfa.dump.* are binary dumps of the whole EEPROM.
+"decode_tfa" is a tool to interpret these dump files, and write the 
+measurement data to stdout.
+
+The binary dumps are dumped every half hour, using cron + dump_tfa.
+
+Measurements may wrap around in the middle of the file, this needs to 
+be checked by the caller (decode_tfa does not take care of this, but tries
+to be helpful and emits "I: WRAPAROUND\n" to stdout if this happens).
+
+
+
+Example usage of decode_tfa:
+
+$ ../klimalogger/decode_tfa tfa.dump.20080131.1500 > plain.20080131.1500
+Found 5 external sensors.
+ ==== 6 total sensors.
+$
+
+Example output:
+0037 30.01.2008 19:06 Tin: 27.8 Hin: 21.0 T1: 24.1 H1: 25.0 T2: 24.5 H2: 24.0 T3: 24.8 H3: 24.0 
+0038 30.01.2008 19:07 Tin: 27.7 Hin: 21.0 T1: 24.1 H1: 25.0 T2: 24.5 H2: 24.0 T3: 24.8 H3: 24.0 
+0039 30.01.2008 19:08 Tin: 27.8 Hin: 21.0 T1: 24.0 H1: 25.0 T2: 24.5 H2: 23.0 
+0040 30.01.2008 19:09 Tin: 27.7 Hin: 21.0 T1: 24.0 H1: 25.0 T2: 24.5 H2: 23.0 
+0041 30.01.2008 19:10 Tin: 27.7 Hin: 21.0 T1: 24.0 H1: 25.0 T2: 24.5 H2: 23.0 
+
+Record field description:
+
+- Field 1: record counter
+- Field 2: date of measurement
+- Field 3: time of measurement (localtime)
+
+After these three, the optional fields start. Each field is written in this 
+format: " $TYPE$SENSOR: $VALUE", where:
+- TYPE: can be "T" or "H", for temperature or humidity
+- SENSOR: one of "in", "1", "2", "3", "4", "5". "in" = "inside", the others are "outside"
+- VALUE: the value of this field. for temperatues: in degrees Celsius, for humidity: in percent
+
+Every record is terminated by a line-feed character ("\n")
+
+
+
