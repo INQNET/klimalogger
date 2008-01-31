@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if ((ptr[0] & 0xF0) >> 4 == 0xF) {
-			printf(">>> Wraparound.\n");
+			printf("I: WRAPAROUND\n");
 			continue;
 		}
 
