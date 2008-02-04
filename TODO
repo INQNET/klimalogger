@@ -1,0 +1,3 @@
+
+- better detection of invalid data (temp=81°C, h=110%)
+
