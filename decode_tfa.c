@@ -103,13 +103,13 @@ int main(int argc, char *argv[]) {
 		t_2 = (ptr[10] & 0x0F) + ((ptr[10] >> 4) * 10) + (ptr[11] & 0x0F)*100;
 		t_2 -= 300; t_2 /= 10;
 		h_2 = (ptr[11] >> 4) + (ptr[12] & 0x0F)*10;
-		if (ptr[11] == 0xaa) { t_2 = h_2 = 0xFF; }
+		if (ptr[11] == 0xaa || ptr[10] == 0xaa || (ptr[12] & 0x0F) == 0x0a) { t_2 = h_2 = 0xFF; }
 
 		t_3 = (ptr[12] >> 4) + (ptr[13] >> 4)*100 + (ptr[13] & 0x0F)*10;
 		t_3 -= 300; t_3 /= 10;
 		if (ptr[13] == 0xaa) t_3 = 0xFF;
 		h_3 = (ptr[14] & 0x0F) + ((ptr[14] & 0xF0) >> 4) *10;
-		if (ptr[13] == 0xaa) h_3 = 0xFF;
+		if (ptr[14] == 0xaa) h_3 = 0xFF;
 
 		printTemp("in", t_in);
 		printHumidity("in", h_in);
