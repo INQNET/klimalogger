@@ -9,7 +9,7 @@
  *  This program is published under the GNU General Public license
  */
 
-#include "rw3600.h"
+#include "eeprom.h"
 
 
 /********************************************************************

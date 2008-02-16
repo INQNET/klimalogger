@@ -1,8 +1,3 @@
-/* open3600 - rw3600.h
- * Include file for the open2300 read and write functions
- * including the data conversion functions
- * version 0.05
- */
  
 #ifndef _INCLUDE_RW3600_H_
 #define _INCLUDE_RW3600_H_ 
@@ -47,10 +42,6 @@ int read_byte(WEATHERSTATION ws);
 int write_byte(WEATHERSTATION ws,int byte);
 void print_log(int log_level, char* str);
 
-/* Platform dependent functions */
-int read_device(WEATHERSTATION serdevice, unsigned char *buffer, int size);
-int write_device(WEATHERSTATION serdevice, unsigned char *buffer, int size);
-//void sleep_very_short(int n);
 void sleep_short(int milliseconds);
 void set_DTR(WEATHERSTATION ws, int val);
 void set_RTS(WEATHERSTATION ws, int val);
