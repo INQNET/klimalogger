@@ -27,14 +27,14 @@ int main(int argc, char *argv[]) {
 	char* filename;
 
 	if (argc != 2) {
-	  printf("Usage: decode_tfa tfa.dump.filename\n");
+	  fprintf(stderr, "Usage: decode_tfa tfa.dump.filename\n");
 	  exit(EXIT_FAILURE);
 	}
 	filename = argv[1];
 
 	fileptr = fopen(filename, "r");
 	if (fileptr == NULL) {
-		printf("Cannot open file %s\n", filename);
+		fprintf(stderr, "Cannot open file %s\n", filename);
 		return 1;
 	}
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if ((ptr[0] & 0xF0) >> 4 == 0xF) {
-			printf("I: WRAPAROUND\n");
+			fprintf(stderr, "I: WRAPAROUND\n");
 			continue;
 		}
 
