@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	int start_adr, len;
 	int block_len = 1000;
 	int retries = 0;
-	char filename[50];
+	char* filename;
 	char* serial_device;
 
 	if (geteuid() != 0) {
@@ -33,16 +33,17 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	if (argc != 2) {
+	if (argc != 2 && argc != 3) {
 		fprintf(stderr, "E: no serial device specified.\n");
-		fprintf(stderr, "Usage: dump_tfa /dev/ttyS0\n");
+		fprintf(stderr, "Usage: dump_tfa /dev/ttyS0 <dumpfile>\n");
 		exit(EXIT_FAILURE);
 	}
 	serial_device = argv[1];
 
-
-	// generate filename based on current time
-	{
+	if (argc >= 3) {
+		filename = argv[2];
+	} else {
+		// generate filename based on current time
 		time_t t;
 		struct tm *tm;
 		t = time(NULL);
@@ -51,6 +52,7 @@ int main(int argc, char *argv[]) {
 			perror("localtime");
 			exit(EXIT_FAILURE);
 		}
+		filename = malloc(50);
 		sprintf(filename, "tfa.dump.");
 		strftime(filename+strlen(filename), sizeof(filename)-strlen(filename), "%Y%m%d.%H%M", tm);
 	}
