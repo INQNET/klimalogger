@@ -7,13 +7,7 @@
 #ifndef _INCLUDE_RW3600_H_
 #define _INCLUDE_RW3600_H_ 
 
-#ifdef WIN32
-#include "win3600.h"
-#endif
-
-#ifndef WIN32
 #include "linux3600.h"
-#endif
 
 #include <string.h>
 #include <fcntl.h>
@@ -37,8 +31,6 @@ void close_weatherstation(WEATHERSTATION ws);
 
 int initialize(WEATHERSTATION ws2300);
 
-void reset_06(WEATHERSTATION ws2300);
-
 int read_data(WEATHERSTATION ws, int number,
 			  unsigned char *readdata);
 			  
@@ -60,8 +52,6 @@ int read_device(WEATHERSTATION serdevice, unsigned char *buffer, int size);
 int write_device(WEATHERSTATION serdevice, unsigned char *buffer, int size);
 //void sleep_very_short(int n);
 void sleep_short(int milliseconds);
-void sleep_long(int seconds);
-int http_request_url(char *urlline);
 void set_DTR(WEATHERSTATION ws, int val);
 void set_RTS(WEATHERSTATION ws, int val);
 int get_DSR(WEATHERSTATION ws);

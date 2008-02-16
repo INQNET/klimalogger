@@ -329,19 +329,6 @@ void sleep_short(int milliseconds)
 	usleep(milliseconds * 1000);
 }
 
-/********************************************************************
- * sleep_long - Linux version
- * 
- * Inputs: Time in seconds (integer)
- *
- * Returns: nothing
- *
- ********************************************************************/
-void sleep_long(int seconds)
-{
-	sleep(seconds);
-}
-
 /* Note: if you see timing issues, maybe you need to adjust this ... */
 void nanodelay() {
 	microdelay(10);
