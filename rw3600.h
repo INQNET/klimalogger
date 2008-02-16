@@ -26,26 +26,10 @@
 #include <sys/stat.h>
 
 #define MAXRETRIES          20
-#define MAXWINDRETRIES      20
-#define WRITENIB            0x42
-#define SETBIT              0x12
-#define UNSETBIT            0x32
-#define WRITEACK            0x10
-#define SETACK              0x04
-#define UNSETACK            0x0C
-#define RESET_MIN           0x01
-#define RESET_MAX           0x02
 
-#define HISTORY_BUFFER_ADR  0x1A0
-#define HISTORY_REC_NO  1796
 
 /* Generic functions */
 
-void read_error_exit(void);
-
-void write_error_exit(void);
-
-void print_usage(void);
 
 WEATHERSTATION open_weatherstation(char *device);
 
@@ -61,12 +45,6 @@ int read_data(WEATHERSTATION ws, int number,
 int write_data(WEATHERSTATION ws, int address, int number,
 			   unsigned char *writedata);
 
-int read_safe(WEATHERSTATION ws2300, int address, int number,
-			  unsigned char *readdata, unsigned char *commanddata);
-			  
-int write_safe(WEATHERSTATION ws2300, int address, int number,
-			   unsigned char encode_constant, unsigned char *writedata,
-			   unsigned char *commanddata);
 
 void read_next_byte_seq(WEATHERSTATION ws);
 void read_last_byte_seq(WEATHERSTATION ws);
