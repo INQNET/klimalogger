@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "data.h"
+#include "record.h"
 
 void printTemp(const char* name, float value) {
 	if (value == 0xFF) return;
@@ -14,7 +14,7 @@ void printHumidity(const char* name, float value) {
 	printf("H%s: %02.1f ", name, value);
 }
 
-int parseRecord(const void* data, Record* r, int sensors) {
+int record_parse(const void* data, Record* r, int sensors) {
 	
 	const unsigned char* ptr = data;
 

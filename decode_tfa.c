@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "data.h"
+#include "record.h"
 
 int main(int argc, char *argv[]) {
 	FILE *fileptr;
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 
-		rc = parseRecord(ptr, &r, sensors-1);
+		rc = record_parse(ptr, &r, sensors-1);
 		if (rc == -1) {
 			fprintf(stderr, "I: WRAPAROUND\n");
 			continue;
