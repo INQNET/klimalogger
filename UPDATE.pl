@@ -94,8 +94,8 @@ sub create_db {
 	             DS:temp:GAUGE:3600:-273:U \\
 	             DS:humidity:GAUGE:3600:0:100 \\
 	             RRA:AVERAGE:0.6:1:1440 \\
-	             RRA:AVERAGE:0.5:60:730 \\
-	             RRA:AVERAGE:0.5:1440:365";
+	             RRA:AVERAGE:0.5:5:8640 \\
+	             RRA:AVERAGE:0.5:60:8760";
 
 	system( $cmd );# or die "Creation of DB $dbname failed: $?";
 }
