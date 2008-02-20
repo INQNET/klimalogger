@@ -6,7 +6,7 @@ my %config;
 
 $config{'in'} = "Serverraum";
 $config{'1'}  = "Raum ITS";
-$config{'2'}  = "Raum X";
+$config{'2'}  = "Raum Operative Leitung";
 $config{'3'}  = "Raum FL";
 
 $config{'datadir'}   = "/srv/klimalogger/data/";
