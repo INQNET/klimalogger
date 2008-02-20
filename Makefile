@@ -1,5 +1,5 @@
 
-LIBOBJ = rw3600.o linux3600.o
+LIBOBJ = eeprom.o linux3600.o
 PROGS = dump_tfa decode_tfa
 CFLAGS = -Wall -O2
 

@@ -9,31 +9,8 @@
  *  This program is published under the GNU General Public license
  */
 
-#include "rw3600.h"
+#include "eeprom.h"
 
-/********************************************************************
- * read_error_exit
- * exit location for all calls to read_safe for error exit.
- * includes error reporting.
- *
- ********************************************************************/
-void read_error_exit(void)
-{
-	perror("read_safe() error");
-	exit(0);
-}
-
-/********************************************************************
- * write_error_exit
- * exit location for all calls to write_safe for error exit.
- * includes error reporting.
- *
- ********************************************************************/
-void write_error_exit(void)
-{
-	perror("write_safe() error");
-	exit(0);
-}
 
 /********************************************************************
  * read_data reads data from the WS2300 based on a given address,
@@ -125,124 +102,6 @@ int write_data(WEATHERSTATION ws, int address, int number,
 	return i;
 }
 
-
-/********************************************************************
- * read_safe Read data, retry until success or maxretries
- * Reads data from the WS2300 based on a given address,
- * number of data read, and a an already open serial port
- * Uses the read_data function and has same interface
- *
- * Inputs:  ws2300 - device number of the already open serial port
- *          address (interger - 16 bit)
- *          number - number of bytes to read, max value 15
- *
- * Output:  readdata - pointer to an array of chars containing
- *                     the just read data, not zero terminated
- *          commanddata - pointer to an array of chars containing
- *                     the commands that were sent to the station
- * 
- * Returns: number of bytes read, -1 if failed
- *
- ********************************************************************/
-int read_safe(WEATHERSTATION ws, int address, int number,
-			  unsigned char *readdata, unsigned char *commanddata)
-{
-	int i,j;
-	unsigned char readdata2[32768];
-	
-	print_log(1,"read_safe");
-
-	for (j = 0; j < MAXRETRIES; j++)
-	{	
-		write_data(ws, address, 0, NULL);
-    read_data(ws, number, readdata);
-    
-    write_data(ws, address, 0, NULL);
-    read_data(ws, number, readdata2);
-    
-    if (memcmp(readdata,readdata2,number) == 0)
-    {
-      //check if only 0's for reading memory range greater then 10 bytes
-      print_log(2,"read_safe - two readings identical");
-      i = 0;
-      if (number > 10)
-      {
-        for (; readdata[i] == 0 && i < number; i++);
-      }
-      
-      if (i != number)
-        break;
-      else
-        print_log(2,"read_safe - only zeros");
-    } else
-      print_log(2,"read_safe - two readings not identical");
-	}
-
-	// If we have tried MAXRETRIES times to read we expect not to
-	// have valid data
-	if (j == MAXRETRIES)
-	{
-		return -1;
-	}
-
-	return number;
-}
-
-
-/********************************************************************
- * write_safe Write data, retry until success or maxretries
- * Writes data to the WS2300 based on a given address,
- * number of data to write, and a an already open serial port
- * Uses the write_data function and has same interface
- *
- * Inputs:      serdevice - device number of the already open serial port
- *              address (interger - 16 bit)
- *              number - number of nibbles to be written/changed
- *                       must 1 for bit modes (SETBIT and UNSETBIT)
- *                       unlimited for nibble mode (WRITENIB)
- *              encode_constant - unsigned char
- *                               (SETBIT, UNSETBIT or WRITENIB)
- *              writedata - pointer to an array of chars containing
- *                          data to write, not zero terminated
- *                          data must be in hex - one digit per byte
- *                          If bit mode value must be 0-3 and only
- *                          the first byte can be used.
- * 
- * Output:      commanddata - pointer to an array of chars containing
- *                            the commands that were sent to the station
- * 
- * Returns: number of bytes written, -1 if failed
- *
- ********************************************************************/
-int write_safe(WEATHERSTATION ws2300, int address, int number,
-               unsigned char encode_constant, unsigned char *writedata,
-               unsigned char *commanddata)
-{
-	int j;
-
-  print_log(2,"write_safe");
-	for (j = 0; j < MAXRETRIES; j++)
-	{
-		// printf("Iteration = %d\n",j); // debug
-		//reset_06(ws2300);
-
-		// Read the data. If expected number of bytes read break out of loop.
-		/*if (write_data(ws2300, address, number, encode_constant, writedata,
-		    commanddata)==number)
-		{
-			break;
-		}*/
-	}
-
-	// If we have tried MAXRETRIES times to read we expect not to
-	// have valid data
-	if (j == MAXRETRIES)
-	{
-		return -1;
-	}
-
-	return number;
-}
 
 void read_next_byte_seq(WEATHERSTATION ws)
 {

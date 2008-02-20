@@ -10,10 +10,9 @@
  *  This program is published under the GNU General Public license
  */
 
-#ifndef WIN32
 #define DEBUG 0
 
-#include "rw3600.h"
+#include "eeprom.h"
 #include "mcdelay.h"
 #include "mcdelay.c"
 
@@ -26,78 +25,77 @@
  *
  ********************************************************************/
 WEATHERSTATION open_weatherstation (char *device) {
-	WEATHERSTATION ws;
-	struct termios adtio;
-	unsigned char buffer[BUFFER_SIZE];
-	long i;
+  WEATHERSTATION ws;
+  struct termios adtio;
+  unsigned char buffer[BUFFER_SIZE];
+  long i;
   print_log(1,"open_weatherstation");
 
   //calibrate nanodelay function
   microdelay_init(1);
 
-	//Setup serial port
+  //Setup serial port
   if ((ws = open(device, O_RDWR | O_NOCTTY)) < 0)
-	{
-		printf("\nUnable to open serial device %s\n", device);
-		exit(EXIT_FAILURE);
-	}
+  {
+    printf("\nUnable to open serial device %s\n", device);
+    exit(EXIT_FAILURE);
+  }
 
-	if ( flock(ws, LOCK_EX) < 0 ) {
-		perror("\nSerial device is locked by other program\n");
-		exit(EXIT_FAILURE);
-	}
-	//We want full control of what is set and simply reset the entire adtio struct
-	memset(&adtio, 0, sizeof(adtio));
+  if ( flock(ws, LOCK_EX) < 0 ) {
+    perror("\nSerial device is locked by other program\n");
+    exit(EXIT_FAILURE);
+  }
+  //We want full control of what is set and simply reset the entire adtio struct
+  memset(&adtio, 0, sizeof(adtio));
   // Serial control options
-	adtio.c_cflag &= ~PARENB;      // No parity
-	adtio.c_cflag &= ~CSTOPB;      // One stop bit
-	adtio.c_cflag &= ~CSIZE;       // Character size mask
-	adtio.c_cflag |= CS8;          // Character size 8 bits
-	adtio.c_cflag |= CREAD;        // Enable Receiver
-	//adtio.c_cflag &= ~CREAD;        // Disable Receiver
-	adtio.c_cflag &= ~HUPCL;       // No "hangup"
-	adtio.c_cflag &= ~CRTSCTS;     // No flowcontrol
-	adtio.c_cflag |= CLOCAL;       // Ignore modem control lines
+  adtio.c_cflag &= ~PARENB;      // No parity
+  adtio.c_cflag &= ~CSTOPB;      // One stop bit
+  adtio.c_cflag &= ~CSIZE;       // Character size mask
+  adtio.c_cflag |= CS8;          // Character size 8 bits
+  adtio.c_cflag |= CREAD;        // Enable Receiver
+  //adtio.c_cflag &= ~CREAD;        // Disable Receiver
+  adtio.c_cflag &= ~HUPCL;       // No "hangup"
+  adtio.c_cflag &= ~CRTSCTS;     // No flowcontrol
+  adtio.c_cflag |= CLOCAL;       // Ignore modem control lines
 
-	// Baudrate, for newer systems
-	cfsetispeed(&adtio, BAUDRATE);
-	cfsetospeed(&adtio, BAUDRATE);	
-	
-	// Serial local options: adtio.c_lflag
-	// Raw input = clear ICANON, ECHO, ECHOE, and ISIG
-	// Disable misc other local features = clear FLUSHO, NOFLSH, TOSTOP, PENDIN, and IEXTEN
-	// So we actually clear all flags in adtio.c_lflag
-	adtio.c_lflag = 0;
+  // Baudrate, for newer systems
+  cfsetispeed(&adtio, BAUDRATE);
+  cfsetospeed(&adtio, BAUDRATE);	
 
-	// Serial input options: adtio.c_iflag
-	// Disable parity check = clear INPCK, PARMRK, and ISTRIP 
-	// Disable software flow control = clear IXON, IXOFF, and IXANY
-	// Disable any translation of CR and LF = clear INLCR, IGNCR, and ICRNL	
-	// Ignore break condition on input = set IGNBRK
-	// Ignore parity errors just in case = set IGNPAR;
-	// So we can clear all flags except IGNBRK and IGNPAR
-	adtio.c_iflag = IGNBRK|IGNPAR;
-	
-	// Serial output options
-	// Raw output should disable all other output options
-	adtio.c_oflag &= ~OPOST;
+  // Serial local options: adtio.c_lflag
+  // Raw input = clear ICANON, ECHO, ECHOE, and ISIG
+  // Disable misc other local features = clear FLUSHO, NOFLSH, TOSTOP, PENDIN, and IEXTEN
+  // So we actually clear all flags in adtio.c_lflag
+  adtio.c_lflag = 0;
 
-	adtio.c_cc[VTIME] = 10;		// timer 1s
-	adtio.c_cc[VMIN] = 0;		// blocking read until 1 char
-	
-	if (tcsetattr(ws, TCSANOW, &adtio) < 0)
-	{
-		printf("Unable to initialize serial device");
-		exit(0);
-	}
-	tcflush(ws, TCIOFLUSH);
+  // Serial input options: adtio.c_iflag
+  // Disable parity check = clear INPCK, PARMRK, and ISTRIP 
+  // Disable software flow control = clear IXON, IXOFF, and IXANY
+  // Disable any translation of CR and LF = clear INLCR, IGNCR, and ICRNL	
+  // Ignore break condition on input = set IGNBRK
+  // Ignore parity errors just in case = set IGNPAR;
+  // So we can clear all flags except IGNBRK and IGNPAR
+  adtio.c_iflag = IGNBRK|IGNPAR;
+
+  // Serial output options
+  // Raw output should disable all other output options
+  adtio.c_oflag &= ~OPOST;
+
+  adtio.c_cc[VTIME] = 10;		// timer 1s
+  adtio.c_cc[VMIN] = 0;		// blocking read until 1 char
+
+  if (tcsetattr(ws, TCSANOW, &adtio) < 0)
+  {
+	  printf("Unable to initialize serial device");
+	  exit(0);
+  }
+  tcflush(ws, TCIOFLUSH);
   
   for (i = 0; i < 448; i++) {
     buffer[i] = 'U';
   }
-  
-  write_device(ws, buffer, 448);
-  
+  write(ws, buffer, 448);
+
   set_DTR(ws,0);
   set_RTS(ws,0);
   i = 0;
@@ -105,6 +103,7 @@ WEATHERSTATION open_weatherstation (char *device) {
     sleep_short(10);
     i++;
   } while (i < INIT_WAIT && !get_DSR(ws));
+
   if (i == INIT_WAIT)
   {
     print_log(2,"Connection timeout 1");
@@ -117,18 +116,18 @@ WEATHERSTATION open_weatherstation (char *device) {
     sleep_short(10);
     i++;
   } while (i < INIT_WAIT && get_DSR(ws));
+
   if (i != INIT_WAIT) {
     set_RTS(ws,1);
     set_DTR(ws,1);
-  } else
-  {
+  } else {
     print_log(2,"Connection timeout 2");
     printf ("Connection timeout\n");
     close_weatherstation(ws);
     exit(0);
   }
-  write_device(ws, buffer, 448);
-	return ws;
+  write(ws, buffer, 448);
+  return ws;
 }
 
 
@@ -143,8 +142,8 @@ WEATHERSTATION open_weatherstation (char *device) {
 void close_weatherstation(WEATHERSTATION ws)
 {
   tcflush(ws,TCIOFLUSH);
-	close(ws);
-	return;
+  close(ws);
+  return;
 }
 
 /********************************************************************
@@ -273,49 +272,6 @@ int get_CTS(WEATHERSTATION ws)
   }
 }
 
-
-/********************************************************************
- * read_device in the Linux version is identical
- * to the standard Linux read() 
- *
- * Inputs:  serdevice - opened file handle
- *          buffer - pointer to the buffer to read into (unsigned char)
- *          size - number of bytes to read
- *
- * Output:  *buffer - modified on success (pointer to unsigned char)
- * 
- * Returns: number of bytes read
- *
- ********************************************************************/
-int read_device(WEATHERSTATION ws, unsigned char *buffer, int size)
-{
-	int ret;
-
-	for (;;) {
-		ret = read(ws, buffer, size);
-		if (ret == 0 && errno == EINTR)
-			continue;
-		return ret;
-	}
-}
-
-/********************************************************************
- * write_device in the Linux version is identical
- * to the standard Linux write()
- *
- * Inputs:  serdevice - opened file handle
- *          buffer - pointer to the buffer to write from
- *          size - number of bytes to write
- *
- * Returns: number of bytes written
- *
- ********************************************************************/
-int write_device(WEATHERSTATION serdevice, unsigned char *buffer, int size)
-{
-	int ret = write(serdevice, buffer, size);
-	return ret;
-}
-
 /********************************************************************
  * sleep_short - Linux version
  * 
@@ -329,22 +285,8 @@ void sleep_short(int milliseconds)
 	usleep(milliseconds * 1000);
 }
 
-/********************************************************************
- * sleep_long - Linux version
- * 
- * Inputs: Time in seconds (integer)
- *
- * Returns: nothing
- *
- ********************************************************************/
-void sleep_long(int seconds)
-{
-	sleep(seconds);
-}
-
 /* Note: if you see timing issues, maybe you need to adjust this ... */
 void nanodelay() {
 	microdelay(10);
 }
 
-#endif
