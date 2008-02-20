@@ -1,13 +1,24 @@
 
-EEPROM: Atmel 24C256(B?)
+EEPROM
+======
+Type: Atmel 24C256(B?)
 
 http://www.atmel.com/dyn/resources/prod_documents/doc0670.pdf
 http://www.atmel.com/dyn/resources/prod_documents/doc5080.pdf
 
-Memory Map:
+Memory Map
+==========
 
 Byte 8-9: Count Entries
 
 Byte 0x0C: Count of external sensors to be logged
 
+
+
+Cabling
+=======
+
+RTS = data from pc
+CTS = data from eeprom
+DTR = clock
 
