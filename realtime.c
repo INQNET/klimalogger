@@ -72,6 +72,12 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
+	printf("Saved time: %02X:%02X \n", data[1], data[0]);
+	/* data 2-5 seem to be the date */
+
+	skip = ((data[0xA] & 0x0F) * 100) + ((data[0x09]>>4) * 10) + (data[0x09] & 0x0F);
+	printf("RecordCount: %d    (other interesting shid: %02X %02X )\n", skip, data[0x0B], data[0x0A] & 0xF0);
+
 	printf("Scanning for two connected records\n");
 	start_adr = data_offset;
 	while(start_adr < (data_offset + block_size*50)) {
@@ -99,12 +105,13 @@ int main(int argc, char *argv[]) {
 
 	skip = 0;
 
-	if (tm->tm_year-(2000+r.date_y) > 0) {
+	if (tm->tm_year-(2000+r.date_y) > 1 || tm->tm_mon-r.date_m > 1) {
+		// too far in the future
 		sequential = 1;
 	}
 
 	if (tm->tm_hour-r.time_h > 1) {
-		skip += (tm->tm_hour-1-r.time_h)*60/record_interval;
+		skip += (tm->tm_hour-r.time_h)*60/record_interval;
 		printf("hours off: %d\n", (tm->tm_hour-r.time_h));
 		skip += (tm->tm_min-r.time_m)/record_interval;
 	}
@@ -114,7 +121,7 @@ int main(int argc, char *argv[]) {
 	}
 	skip -= 5;
 	printf("skip=%d, seq=%d\n", skip, sequential);
-	if (skip > 1100) {
+	if (skip > 1100 || skip < 0) {
 		sequential = 1;
 	}
 
