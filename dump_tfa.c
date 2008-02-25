@@ -88,8 +88,8 @@ int main(int argc, char *argv[]) {
 		printf("   ... reading %d bytes beginning from %d\n", this_len, start_adr);
 
 		nanodelay();
-		write_data(ws, start_adr, 0, NULL);
-		got_len = read_data(ws, this_len, data+start_adr);
+		eeprom_seek(ws, start_adr);
+		got_len = eeprom_read(ws, data+start_adr, this_len);
 		if (got_len != this_len) {
 			if (got_len == -1 && retries < MAX_RETRIES) {
 				retries++;

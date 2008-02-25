@@ -19,12 +19,14 @@
 
 /* Generic functions */
 
+int eeprom_read(WEATHERSTATION ws, unsigned char *buf, size_t count);
+int eeprom_seek(WEATHERSTATION ws, off_t pos);
+
+
 
 WEATHERSTATION open_weatherstation(char *device);
 
 void close_weatherstation(WEATHERSTATION ws);
-
-int initialize(WEATHERSTATION ws2300);
 
 int read_data(WEATHERSTATION ws, int number,
 			  unsigned char *readdata);
