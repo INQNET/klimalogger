@@ -60,8 +60,12 @@ sub graph {
 	        LINE2:temp#FF0000:\"Temperature\" \\
 	        GPRINT:temp:MIN:\"  Min\\: %4.1lf\" \\
 	        GPRINT:temp:MAX:\" Max\\: %4.1lf\" \\
-	        GPRINT:temp:AVERAGE:\" Avg\\: %4.1lf\" \\
-	        -t \" $time - Sensor $dbalias (Temperature) \" ";
+	        GPRINT:temp:AVERAGE:\" Avg\\: %4.1lf\" \\";
+	if ($time eq 'Day') {
+		$cmd .= "GPRINT:temp:LAST:\" Current\\: %4.1lf\" \\";
+	}
+	$cmd .= "" .
+	        "-t \" $time - Sensor $dbalias (Temperature) \" ";
 
 	#print $cmd;
 	system( $cmd . " > /dev/null");
@@ -76,8 +80,12 @@ sub graph {
 	        LINE2:hum#00FF00:\"Humidity\" \\
 	        GPRINT:hum:MIN:\"  Min\\: %4.1lf\" \\
 	        GPRINT:hum:MAX:\" Max\\: %4.1lf\" \\
-	        GPRINT:hum:AVERAGE:\" Avg\\: %4.1lf\" \\
-	        -t \" $time - Sensor $dbalias (Humidity) \" ";
+	        GPRINT:hum:AVERAGE:\" Avg\\: %4.1lf\" \\";
+	if ($time eq 'Day') {
+		$cmd .= "GPRINT:hum:LAST:\" Current\\: %4.1lf\" \\";
+	}
+	$cmd .= "" .
+	        "-t \" $time - Sensor $dbalias (Humidity) \" ";
 
 	#print $cmd;
 	system( $cmd . " > /dev/null");
