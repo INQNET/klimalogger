@@ -80,6 +80,10 @@ int main(int argc, char *argv[]) {
 		printHumidity("2", r.h_2);
 		printTemp("3", r.t_3);
 		printHumidity("3", r.h_3);
+		printTemp("4", r.t_4);
+		printHumidity("4", r.h_4);
+		printTemp("5", r.t_5);
+		printHumidity("5", r.h_5);
 
 //		printf(" Tin: %02.1f T1: %02.1f Fin: %d F1: %d T2: %02.1f F2: %d", t_in, t_1, h_in, h_1, t_2, h_2);
 //		printf(" T3: %02.1f F3: %d ", t_3, h_3);

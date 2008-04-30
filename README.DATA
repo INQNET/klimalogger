@@ -40,3 +40,35 @@ Every record is terminated by a line-feed character ("\n")
 
 
 
+
+In-Device Data Records:
+
+Offset 0x64 is first byte of first record.
+
+Record length:
+ 4 sensors = 15 bytes
+ 6 sensors = 20 bytes
+
+Byte  0: Minute
+Byte  1: Hour
+Byte  2: Day
+Byte  3: Month
+Byte  4: Year
+
+Byte  5: Tin
+Byte  6: T1|Tin
+Byte  7: T1
+Byte  8: Hin
+Byte  9: H1
+Byte 10: 12
+Byte 11: H2|T2
+Byte 12: T3|H2
+Byte 13: T3
+Byte 14: H3
+Byte 15: T4
+Byte 16: H4|T4
+Byte 17: T5|H4
+Byte 18: T5
+Byte 19: H5
+
+Temperatures are +30 C * 10.

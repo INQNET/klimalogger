@@ -42,6 +42,7 @@ close FH;
 
 
 # rrdtool likes its timestamps ascending
+my %updatestrs;
 foreach my $key ( sort(keys %input) ) {
 	my ( @tmp_temp, @tmp_hum, @tmp_pairs );
 
@@ -70,16 +71,16 @@ foreach my $key ( sort(keys %input) ) {
 		next if defined $last_update{$sens} and
 		        $key <= $last_update{$sens};
 	
-
 		if ( ! -f "$data_dir/sensor_$sens.rrd" ) {
 			create_db($sens, $key);
 		}
-
-		system( "rrdtool update $data_dir/sensor_$sens.rrd $key:$temp:$hum" )
+		$updatestrs{$sens} ||= '';
+		$updatestrs{$sens} .= "$key:$temp:$hum ";
 	}
 }
-
-
+for my $sens ( keys %updatestrs ) {
+	system( "rrdtool update $data_dir/sensor_$sens.rrd $updatestrs{$sens}" );
+}
 
 
 sub create_db {
@@ -88,14 +89,22 @@ sub create_db {
 
 	print "Creating DB $dbname...\n";
 
+	# Create a Database, with
+	# a step size of 60 seconds
+	# a Data Source for temperature
+	# a Data Source for humidity
+	# and averages for
+	# - 1 minute accuracy, for 1440 minutes of data (=1 day)
+	# - 5 minute accuracy, for 17280*5 minutes of data (=60 days)
+	# - 12h accuracy, for 10 years of data
 	my $cmd = "rrdtool create $data_dir/sensor_$dbname.rrd \\
 	             --start $start \\
 	             --step 60 \\
 	             DS:temp:GAUGE:3600:-273:U \\
 	             DS:humidity:GAUGE:3600:0:100 \\
 	             RRA:AVERAGE:0.6:1:1440 \\
-	             RRA:AVERAGE:0.5:5:8640 \\
-	             RRA:AVERAGE:0.5:60:8760";
+	             RRA:AVERAGE:0.5:5:17280 \\
+	             RRA:AVERAGE:0.5:720:7300";
 
 	system( $cmd );# or die "Creation of DB $dbname failed: $?";
 }

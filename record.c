@@ -31,6 +31,7 @@ int record_parse(const void* data, Record* r, int sensors) {
 	r->date_y = (((ptr[4] & 0xF0) >> 4) * 10) + (ptr[4] & 0x0F);
 
 	// begin decoding sensors
+	// see README.DATA for details
 	r->t_in = (ptr[5] >> 4)*10 + (ptr[5]&0x0F) + ((ptr[6] & 0x0F))*100;
 	r->t_in -= 300; r->t_in /= 10;
 	if (ptr[5] == 0xaa) { r->t_in = 0xFF; }
@@ -56,6 +57,17 @@ int record_parse(const void* data, Record* r, int sensors) {
 	if (ptr[14] == 0xaa) r->h_3 = 0xFF;
 
 	if (sensors < 4) return 0;
+
+	r->t_4 = (ptr[15] & 0x0F) + ((ptr[15] >> 4) * 10) + (ptr[16] & 0x0F)*100;
+	r->t_4 -= 300; r->t_4 /= 10;
+	r->h_4 = (ptr[16] >> 4) + (ptr[17] & 0x0F)*10;
+	if (ptr[16] == 0xaa || ptr[15] == 0xaa || (ptr[17] & 0x0F) == 0x0a) { r->t_4 = r->h_4 = 0xFF; }
+
+	r->t_5 = (ptr[17] >> 4) + (ptr[18] >> 4)*100 + (ptr[18] & 0x0F)*10;
+	r->t_5 -= 300; r->t_5 /= 10;
+	if (ptr[18] == 0xaa) r->t_5 = 0xFF;
+	r->h_5 = (ptr[19] & 0x0F) + ((ptr[19] & 0xF0) >> 4) *10;
+	if (ptr[19] == 0xaa) r->h_5 = 0xFF;
 
 	return 0;
 }

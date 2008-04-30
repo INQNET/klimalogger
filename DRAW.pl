@@ -8,6 +8,8 @@ $config{'in'} = "Serverraum";
 $config{'1'}  = "Raum ITS";
 $config{'2'}  = "Raum Operative Leitung";
 $config{'3'}  = "Raum FL";
+$config{'4'}  = "Rezeption";
+$config{'5'}  = "Kueche";
 
 $config{'datadir'}   = "/srv/klimalogger/data/";
 $config{'outputdir'} = "/srv/klimalogger/web/out/";
