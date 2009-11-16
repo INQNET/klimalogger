@@ -1,0 +1,371 @@
+.. -*- mode: rst -*-
+
+=====================================
+ TFA-Dostmann 30.3015 "Klima Logger"
+=====================================
+
+28-10-2009 version 0.1 
+^^^^^^^^^^^^^^^^^^^^^^
+
+Overview
+========
+
+The TFA-Dostmann "Klima Logger" is a thermo-hygrometer with integrated
+data logger. Additionally to the internal sensors it can also collect
+the data of up to 5 external (433MHz based) sensors, thus allowing to
+log the data of up to 6+6 environmental measurements.
+
+
+Communication Protocol
+======================
+
+Communication with the device is accomplished by directly accessing
+the I2C-attached EEPROM via the internal multi-master I2C bus. The I2C
+bus is exposed via a simple RS232 interface.
+
+Data Cable Pinout
+-----------------
+
+============  ======== = ========= =====================
+ I2C Signal    RJ pin     DB9 pin   RS232 Signal at DTE
+============  ======== = ========= =====================
+GND           1 black     5         G
+--            2 yellow <  3         TxD
+nSCL          3 blue   <  4         DTR
+nSDA          4 brown  <  7         RTS
+SCL           5 green  >  6         DSR
+SDA           6 white  >  8         CTS
+============  ======== = ========= =====================
+
+N.B.: Only the TxD signal, but not the RxD signal is connected, since
+communication is carried out via the handshake lines. The TxD signal
+is only used for requesting access to the I2C bus.
+
+The Protocol
+------------
+
+Communication Setup
+~~~~~~~~~~~~~~~~~~~
+
+Set DTR and RTS low (thus set SCL and SDA high).
+
+Write 'U' (0x55) to TxD at 300N1, until the DSR line starts making a
+~12%-high duty cycle. A 50% duty cycle means the device is busy with
+RF reception, which might not be a good time to take over the I2C bus.
+
+Set DTR and RTS high (SCL = 0, SDA = 0) in order to keep control over
+the i2c bus.
+
+Low-Level Bitbanging
+~~~~~~~~~~~~~~~~~~~~
+
+To write one byte over i2c:
+
+for each bit (msb first): ::
+
+  SDA = bit
+  SCL = 1
+  SCL = 0
+
+finish up with stop bit: ::
+
+ SDA = 1
+ status = SDA
+ SCL = 1
+ SCL = 0
+
+
+
+EEPROM Memory Map
+=================
+
+The Klima-Logger features an Atmel AT24C256 EEPROM which provides a
+32KiB storage for the measurements.
+
+Parameter Section
+-----------------
+
+::
+
+ 0000000 30 14 61 02 91 00 00 ff 01 44 09 00 01 ff ff 
+         MM HH dW md ym ?y TZ ?? LI LogCt FL SC ?? ?? 
+
+
++------+-----------+-------------------------------+--------+
+| Addr.| Section   |  Bit                          | Format |
+|      |           +---+---+---+---+---+---+---+---+        |
+|      |           | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |        |
++======+===========+===+===+===+===+===+===+===+===+========+
+| 00h  | Timestamp | MN2           | MN1           | BCD/BCD|
++------+           +---------------+---------------+--------+
+| 01h  |           | HR2           | HR1           | BCD/BCD|
++------+           +---------------+---------------+--------+
+| 02h  |           | DM1           | DW            | BCD/BCD|
++------+           +---------------+---------------+--------+
+| 03h  |           | MO1           | DM2           | BCD/BCD|
++------+           +---------------+---------------+--------+
+| 04h  |           | YR1           | MO2           | BCD/BCD|
++------+           +---------------+---------------+--------+
+| 05h  |           | ?             | YR2           | -/BCD  |
++------+-----------+---------------+---------------+--------+
+| 06h  | Timezone  | TZ                            | INT8   |
++------+-----------+-------------------------------+--------+
+| 07h  | unknown   | ?                             |        |
++------+-----------+---------------+---------------+--------+
+| 08h  | Log       | ?             | LI            |-/UINT4 |
+|      | Interval  |               |               |        |
++------+-----------+---------------+---------------+--------+
+| 09h  | Log Count | LC2           | LC1           |BCD/BCD |
++------+           +---------------+---------------+--------+
+| 0Ah  |           | LC4           | LC3           |BCD/BCD |
++------+-----------+---------------+---+---+-------+--------+
+| 0Bh  | Flags     | ?                 |OVF|  ?    |        |
++------+-----------+---------------+---+---+-------+--------+
+| 0Ch  | Sensor    | ?             | SC            | -/UINT4|
+|      | Count     |               |               |        |
++------+-----------+---------------+---------------+--------+
+| 0Dh  | unknown   | ?                             |        |
++------+-----------+-------------------------------+--------+
+| 0Eh  | unknown   | ?                             |        |
++------+-----------+-------------------------------+--------+
+
+Timestamp
+~~~~~~~~~
+
+::
+
+  /   20<YR2><YR1>-<MO2><MO1>-<DM2><DM1> <HR2><HR1>:<MN2><MN1>:00
+
+  00h                                                MN2|MN1
+  01h                                      HR2|HR1
+  02h                              DM1|DW
+  03h                     MO1|DM2
+  04h          YR1|MO2
+  05h  ?|YR2         
+
+==== ===========
+ WD   Weekday
+==== ===========
+ 1h   Monday
+ 2h   Tuesday
+ 3h   Wednesday
+ 4h   Thursday
+ 5h   Friday
+ 6h   Saturday
+ 7h   Sunday
+==== ===========
+
+Timezone
+~~~~~~~~
+
+==== ===========
+ TZ   TZ Offset
+==== ===========
+0Ch   +1200
+... 
+01h   +0100
+00h   +0000
+FFh   -0100
+...
+F4h   -1200
+==== ===========
+
+Log Interval
+~~~~~~~~~~~~
+
+==== ==========
+ LI   Interval 
+==== ==========
+ 0h   1-minute
+ 1h   5-minute
+ 2h  10-minute
+ 3h  15-minute
+ 4h  20-minute
+ 5h  30-minute
+ 6h  1-hour
+ 7h  2-hour
+ 8h  4-hour*
+ 9h  6-hour*
+ Ah  8-hour*
+ Bh  12-hour*
+ Ch  24-hour* 
+==== ==========
+
+Log Count
+~~~~~~~~~
+
+BCD formatted log count (displayed as-is on LCD to represet no. of
+unread entries): ::
+
+ <LC4><LC3><LC2><LC1>
+
+Gets incremented on each measurement recording. Is usually reset to
+zero by data recorder, so that this field represents the number of
+unread log records.
+
+When the last record is written which fits into the log area, the
+<OVF> bit gets set - i.e. the log buffer overflows - and the very
+first record is overwritten next. The log counter is not incremented
+anymore.
+
+Calibration Data:
+~~~~~~~~~~~~~~~~~
+
+::
+
+ 0000010 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+         Ti    T1    T2    T3    T4    T5 Fi F1 F2 F3 F4
+ 0000020 00 
+         F5
+
+00 -> 0
+
+90 -> -10
+
+10 -> +10
+
+::
+
+ 0000020    70 10 70 10 70 10 70 10 70 10 70 10 
+            H/L F Alarms
+
+T-Alarms:
+~~~~~~~~~
+
+::
+
+ 0000020                                        00 00 06
+ 0000030 00 40 00 00 06 00 40 00 00 06 00 40 00 00 06 00
+ 0000040 40 00 00 06 00 40 00 00 06 00 40
+
+::
+
+ 2Dh  00                            rsvd
+ 2Eh  00                       Tmax
+ 2Fh  06              rsvd|Tmax
+ 30h  00     Tmin|rsvd
+ 31h  40 Tmin
+
+Sensor Ids:
+~~~~~~~~~~~
+
++------+-----------+-------------------------------+--------+
+| Addr.| Section   |  Bit                          | Format |
+|      |           +---+---+---+---+---+---+---+---+        |
+|      |           | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |        |
++======+===========+===+===+===+===+===+===+===+===+========+
+| 4Bh  | Sensor Ids| Sensor Id 1                   | UINT8  |
++------+           +-------------------------------+--------+
+| 4Ch  |           | Sensor Id 2                   | UINT8  |
++------+           +-------------------------------+--------+
+| 4Dh  |           | Sensor Id 3                   | UINT8  |
++------+           +-------------------------------+--------+
+| 4Eh  |           | Sensor Id 4                   | UINT8  |
++------+           +-------------------------------+--------+
+| 4Fh  |           | Sensor Id 5                   | UINT8  |
++------+-----------+-----------+---+---+---+---+---+--------+
+| 50h  | Sensor    |     ?     |SV5|SV4|SV3|SV2|SV1|bitfield|
+|      | valid     |           |   |   |   |   |   |        |
++------+-----------+-----------+---+---+---+---+---+--------+
+
+::
+
+ 0000040                                  4c 00 00 00 00
+ 0000050 01 
+
+Ringbuffer Config:
+~~~~~~~~~~~~~~~~~~
+
+used by data logger software for housekeeping
+
+::
+
+ 0000050    ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ 0000060 ff ff ff ff
+
+
+Log Area
+--------
+
+all BCD coded
+
+Timestamp
+~~~~~~~~~
+
+::
+
+ Byte  0: MM (0xFF = record not written yet)
+ Byte  1: HH
+ Byte  2: dd
+ Byte  3: mm
+ Byte  4: yy
+
+Encoding of T
+~~~~~~~~~~~~~
+
+BCD coded: ::
+
+ AAAh = N/A
+ XXXh = (XXX-300)/10 C
+
+Encoding of H
+~~~~~~~~~~~~~
+
+BCD coded: ::
+
+ AAh = N/A
+ XXh = XX RH%
+
+Record Lengths
+~~~~~~~~~~~~~~
+
+===== =============== ==========
+ SC    Record Length   Capacity
+===== =============== ==========
+0      10              3266
+1      10              3266
+2      13 (12.5)       2512
+3      15              2177
+4      18 (17.5)       1814
+5      20              1633
+===== =============== ==========
+
+for I+5:
+~~~~~~~~
+
+::
+
+ Byte  5:                  Tin
+ Byte  6:           T1|Tin
+ Byte  7:        T1
+ Byte  8:    Hin
+ Byte  9: H1
+
+ Byte 10:                   T2
+ Byte 11:             H2|T2
+ Byte 12:       T3|H2
+
+ Byte 13:    T3
+ Byte 14: H3
+
+ Byte 15:                   T4
+ Byte 16:             H4|T4
+ Byte 17:       T5|H4
+
+ Byte 18:    T5
+ Byte 19: H5
+
+
+EOF Marker
+~~~~~~~~~~
+
+5a2f @ 0x7ffb
+
+References
+==========
+
+https://oss.inqnet.at/trac/klimalogger/
+
+http://members.home.nl/xbasic/01c2249c770e62101/index.html
+
+http://www.atmel.com/dyn/resources/prod_documents/doc0670.pdf
