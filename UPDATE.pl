@@ -46,11 +46,11 @@ my %updatestrs;
 foreach my $key ( sort(keys %input) ) {
 	my ( @tmp_temp, @tmp_hum, @tmp_pairs );
 
-	@tmp_pairs = ( $input{$key} =~ m/[TH][in\d]+: [\d\.]+/g );
+	@tmp_pairs = ( $input{$key} =~ m/[TH][in\d]+: [\d\.\-]+/g );
 
 	foreach ( @tmp_pairs ) {
 		my ( $dtype, $sens, $value ) =
-			( /([TH])([in\d]+): ([\d\.]+)/ );
+			( /([TH])([in\d]+): ([\d\.\-]+)/ );
 
 		if ( $dtype eq 'T' ) {
 			$tmp_temp[ $sens eq 'in' ? 0 : $sens ] = $value;
